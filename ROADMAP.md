@@ -22,10 +22,11 @@ Implemented:
 - shared `packages/contracts` workspace with debug types and Zod schemas
 - isolated API `AiModule` with `AiProvider` interface and `MockAiProvider`
 - `AI_PROVIDER` configuration with validated provider selection
+- OpenAI provider using the Responses API and structured output parsing
 
 Current important limitation:
 
-- only the mock AI provider is available.
+- provider-level errors are not mapped to stable API error categories yet.
 
 ## Guiding Principles
 
@@ -217,6 +218,8 @@ Acceptance criteria:
 
 ## Phase 4: OpenAI Provider
 
+Status: completed.
+
 Goal: add a real LLM provider without changing the debug API contract.
 
 Add:
@@ -385,11 +388,11 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Implement `packages/contracts` with Zod schemas.
-2. Replace duplicated API/web debug types with shared contract types.
-3. Add tests around contract validation where useful.
-4. Introduce `AiModule` and `AiProvider` interface.
-5. Move current mock response behind `MockAiProvider`.
+1. Improve provider-level error mapping.
+2. Add input safety and secret redaction before external provider calls.
+3. Add lightweight observability for AI calls.
+4. Improve frontend handling for validation and provider errors.
+5. Decide whether persistence/history has enough product value to add.
 
 ## Decision Log
 

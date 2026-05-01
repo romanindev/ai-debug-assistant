@@ -2,7 +2,7 @@
 
 NestJS backend for AI Debug Assistant.
 
-The API validates debugging input, exposes health and debug analysis endpoints, and returns a structured analysis response. The current analysis implementation is intentionally mocked so the product flow can be built before adding a real LLM provider.
+The API validates debugging input, exposes health and debug analysis endpoints, and returns a structured analysis response. The analysis can run through a deterministic mock provider or through OpenAI, selected by `AI_PROVIDER`.
 
 ## Stack
 
@@ -21,6 +21,9 @@ Create `apps/api/.env`:
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AI_PROVIDER=mock
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+AI_REQUEST_TIMEOUT_MS=15000
 ```
 
 ## Commands
@@ -124,13 +127,13 @@ packages/contracts
 - Request validation is enabled globally through `ValidationPipe`.
 - Debug context and response types come from `@ai-debug-assistant/contracts`.
 - Debug analysis is delegated through `AiService`.
-- The current AI provider is `MockAiProvider`.
+- Available AI providers are `MockAiProvider` and `OpenAiProvider`.
 - AI provider selection is configured through `AI_PROVIDER`.
+- OpenAI integration uses the Responses API with structured output validation.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Move prompt construction into readable prompt files.
-- Request structured JSON from the LLM provider.
-- Validate provider responses before returning them to the web app.
-- Add provider timeout/error handling.
+- Improve provider-level error mapping.
+- Add input safety and redaction before external provider calls.
+- Add lightweight observability for AI calls.
