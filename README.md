@@ -50,6 +50,7 @@ The current flow:
 - `POST /debug/analyze` is implemented with request validation.
 - Debug analysis can run through the mock provider or the OpenAI provider.
 - OpenAI integration uses structured output parsing against the shared contract schema.
+- API and web handle validation/provider errors through a stable error response shape.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
 - API unit and e2e tests cover the current backend flow.

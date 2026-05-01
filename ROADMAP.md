@@ -257,6 +257,8 @@ Acceptance criteria:
 
 ## Phase 5: Prompt Versioning
 
+Status: completed.
+
 Goal: make prompt changes explicit and reviewable.
 
 Prompt files:
@@ -285,6 +287,8 @@ Acceptance criteria:
 - Prompt changes are easy to review.
 
 ## Phase 6: Error Handling And Frontend Feedback
+
+Status: completed.
 
 Goal: handle expected API and AI failures intentionally.
 

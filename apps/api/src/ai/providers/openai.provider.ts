@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import { zodTextFormat } from 'openai/helpers/zod';
 
+import { AiProviderError } from '../ai-provider.error';
 import type { AiProvider } from '../ai-provider.interface';
 import { buildDebugAnalysisPrompt } from '../prompts/debug-analysis.v1.prompt';
 
@@ -23,26 +24,38 @@ export class OpenAiProvider implements AiProvider {
       throw new Error('OPENAI_MODEL is required when AI_PROVIDER=openai.');
     }
 
-    const response = await client.responses.parse({
-      model,
-      input: [
-        {
-          role: 'system',
-          content:
-            'You are a senior software debugging assistant. Return only structured debugging guidance that matches the requested schema.',
+    const response = await client.responses
+      .parse({
+        model,
+        input: [
+          {
+            role: 'system',
+            content:
+              'You are a senior software debugging assistant. Return only structured debugging guidance that matches the requested schema.',
+          },
+          {
+            role: 'user',
+            content: buildDebugAnalysisPrompt(input),
+          },
+        ],
+        text: {
+          format: zodTextFormat(debugAnalysisSchema, 'debug_analysis'),
         },
-        {
-          role: 'user',
-          content: buildDebugAnalysisPrompt(input),
-        },
-      ],
-      text: {
-        format: zodTextFormat(debugAnalysisSchema, 'debug_analysis'),
-      },
-    });
+      })
+      .catch((error: unknown) => {
+        throw new AiProviderError(
+          'AI_PROVIDER_ERROR',
+          'AI provider request failed.',
+          502,
+          error instanceof Error ? { cause: error } : undefined,
+        );
+      });
 
     if (!response.output_parsed) {
-      throw new Error('OpenAI response did not include parsed debug analysis.');
+      throw new AiProviderError(
+        'AI_MALFORMED_RESPONSE',
+        'AI provider returned an invalid response.',
+      );
     }
 
     return response.output_parsed;

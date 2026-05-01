@@ -122,10 +122,10 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Result UI is structured for the current API response.
 - Styling uses Tailwind CSS utility classes.
 - Debug contract types are shared through `@ai-debug-assistant/contracts`.
+- API validation/provider errors are rendered as user-facing messages.
 
 ## Next Web Steps
 
-- Improve validation feedback from API errors.
 - Add request cancellation or disabled state refinement for repeated submits.
 - Add UI tests once the flow stabilizes.
-- Replace duplicated API contract types with a shared package when the contract starts changing frequently.
+- Add copy actions for generated analysis and code examples.
