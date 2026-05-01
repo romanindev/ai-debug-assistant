@@ -105,6 +105,7 @@ API:
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
+AI_PROVIDER=mock
 ```
 
 Web:

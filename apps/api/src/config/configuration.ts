@@ -3,4 +3,7 @@ export default () => ({
   cors: {
     origin: process.env.CORS_ORIGIN,
   },
+  ai: {
+    provider: process.env.AI_PROVIDER ?? 'mock',
+  },
 });

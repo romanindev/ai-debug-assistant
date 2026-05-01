@@ -20,6 +20,7 @@ Create `apps/api/.env`:
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
+AI_PROVIDER=mock
 ```
 
 ## Commands
@@ -124,11 +125,11 @@ packages/contracts
 - Debug context and response types come from `@ai-debug-assistant/contracts`.
 - Debug analysis is delegated through `AiService`.
 - The current AI provider is `MockAiProvider`.
+- AI provider selection is configured through `AI_PROVIDER`.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Add provider selection through API configuration.
 - Move prompt construction into readable prompt files.
 - Request structured JSON from the LLM provider.
 - Validate provider responses before returning them to the web app.

@@ -21,11 +21,11 @@ Implemented:
 - root and workspace README files
 - shared `packages/contracts` workspace with debug types and Zod schemas
 - isolated API `AiModule` with `AiProvider` interface and `MockAiProvider`
+- `AI_PROVIDER` configuration with validated provider selection
 
 Current important limitation:
 
-- only the mock AI provider is available;
-- provider selection is not configurable yet.
+- only the mock AI provider is available.
 
 ## Guiding Principles
 
@@ -180,6 +180,8 @@ Acceptance criteria:
 - No OpenAI dependency is introduced in this phase.
 
 ## Phase 3: Provider Selection Through Configuration
+
+Status: completed.
 
 Goal: make the AI provider switchable through environment configuration.
 
