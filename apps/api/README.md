@@ -96,6 +96,12 @@ src/
   app.controller.ts
   config/
     configuration.ts
+  ai/
+    ai.module.ts
+    ai.service.ts
+    ai-provider.interface.ts
+    providers/
+      mock-ai.provider.ts
   debug/
     debug.module.ts
     debug.controller.ts
@@ -116,12 +122,13 @@ packages/contracts
 - Debug analysis endpoint is implemented.
 - Request validation is enabled globally through `ValidationPipe`.
 - Debug context and response types come from `@ai-debug-assistant/contracts`.
-- Debug analysis response is mocked.
+- Debug analysis is delegated through `AiService`.
+- The current AI provider is `MockAiProvider`.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Add an isolated AI module.
+- Add provider selection through API configuration.
 - Move prompt construction into readable prompt files.
 - Request structured JSON from the LLM provider.
 - Validate provider responses before returning them to the web app.

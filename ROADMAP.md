@@ -20,11 +20,12 @@ Implemented:
 - API unit and e2e tests
 - root and workspace README files
 - shared `packages/contracts` workspace with debug types and Zod schemas
+- isolated API `AiModule` with `AiProvider` interface and `MockAiProvider`
 
 Current important limitation:
 
-- AI analysis is mocked inside the debug flow.
-- There is no isolated AI provider boundary yet.
+- only the mock AI provider is available;
+- provider selection is not configurable yet.
 
 ## Guiding Principles
 
@@ -131,6 +132,8 @@ Notes:
 - Avoid turning it into a general shared utilities package.
 
 ## Phase 2: AI Module With Provider Interface
+
+Status: completed.
 
 Goal: introduce an AI boundary without adding a real external provider yet.
 

@@ -9,7 +9,7 @@ export class DebugController {
   constructor(private readonly debugService: DebugService) {}
 
   @Post('analyze')
-  analyze(@Body() dto: AnalyzeDebugDto): DebugAnalysis {
+  analyze(@Body() dto: AnalyzeDebugDto): Promise<DebugAnalysis> {
     return this.debugService.analyze(dto);
   }
 }
