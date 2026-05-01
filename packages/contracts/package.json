@@ -2,25 +2,29 @@
   "name": "@ai-debug-assistant/contracts",
   "version": "0.1.0",
   "private": true,
-  "type": "commonjs",
-  "main": "./dist/index.js",
+  "type": "module",
+  "main": "./dist-cjs/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist-cjs/index.cjs"
     },
     "./debug": {
       "types": "./dist/debug/index.d.ts",
-      "default": "./dist/debug/index.js"
+      "import": "./dist/debug/index.js",
+      "require": "./dist-cjs/debug/index.cjs"
     },
     "./debug/constants": {
       "types": "./dist/debug/debug.constants.d.ts",
-      "default": "./dist/debug/debug.constants.js"
+      "import": "./dist/debug/debug.constants.js",
+      "require": "./dist-cjs/debug/debug.constants.cjs"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node scripts/rename-cjs-output.cjs"
   },
   "dependencies": {
     "zod": "^4.4.1"

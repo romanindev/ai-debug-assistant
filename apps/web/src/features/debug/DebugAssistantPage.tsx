@@ -110,6 +110,9 @@ export function DebugAssistantPage() {
             <span className="text-[13px] font-bold text-slate-700">
               Error / Log / Stack Trace
             </span>
+            <span className="text-[13px] leading-5 text-slate-500">
+              Review pasted logs for secrets. The API redacts common tokens before external AI calls, but avoid sharing sensitive data when possible.
+            </span>
             <textarea
               className="min-h-[360px] w-full resize-y rounded-lg border border-slate-300 bg-white p-3 font-mono text-[13px] leading-6 text-slate-950 outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 max-[860px]:min-h-[280px]"
               value={errorText}

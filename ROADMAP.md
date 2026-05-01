@@ -317,6 +317,8 @@ Acceptance criteria:
 
 ## Phase 7: Input Safety And Redaction
 
+Status: completed.
+
 Goal: reduce the risk of sending sensitive data to an external LLM.
 
 Possible additions:

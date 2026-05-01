@@ -11,6 +11,7 @@ import { zodTextFormat } from 'openai/helpers/zod';
 import { AiProviderError } from '../ai-provider.error';
 import type { AiProvider } from '../ai-provider.interface';
 import { buildDebugAnalysisPrompt } from '../prompts/debug-analysis.v1.prompt';
+import { redactSensitiveInput } from '../safety/redact-sensitive-input';
 
 @Injectable()
 export class OpenAiProvider implements AiProvider {
@@ -24,6 +25,11 @@ export class OpenAiProvider implements AiProvider {
       throw new Error('OPENAI_MODEL is required when AI_PROVIDER=openai.');
     }
 
+    const redactedInput: AnalyzeDebugRequest = {
+      ...input,
+      errorText: redactSensitiveInput(input.errorText),
+    };
+
     const response = await client.responses
       .parse({
         model,
@@ -35,7 +41,7 @@ export class OpenAiProvider implements AiProvider {
           },
           {
             role: 'user',
-            content: buildDebugAnalysisPrompt(input),
+            content: buildDebugAnalysisPrompt(redactedInput),
           },
         ],
         text: {

@@ -123,6 +123,7 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Styling uses Tailwind CSS utility classes.
 - Debug contract types are shared through `@ai-debug-assistant/contracts`.
 - API validation/provider errors are rendered as user-facing messages.
+- The input form warns users to review logs for secrets before submitting.
 
 ## Next Web Steps
 

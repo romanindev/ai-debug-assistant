@@ -131,9 +131,9 @@ packages/contracts
 - AI provider selection is configured through `AI_PROVIDER`.
 - OpenAI integration uses the Responses API with structured output validation.
 - API errors use a consistent `{ error: { code, message, details? } }` shape.
+- OpenAI provider input is redacted for common secrets before external calls.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Add input safety and redaction before external provider calls.
 - Add lightweight observability for AI calls.
