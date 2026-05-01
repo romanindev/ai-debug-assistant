@@ -13,6 +13,6 @@ export const debugAnalysisSchema = z.object({
   summary: z.string().min(1),
   possibleCause: z.string().min(1),
   suggestedFix: z.string().min(1),
-  codeExample: z.string().min(1).optional(),
+  codeExample: z.string().min(1).nullable(),
   checklist: z.array(z.string().min(1)).min(1),
 });
