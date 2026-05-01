@@ -19,10 +19,10 @@ Implemented:
 - frontend debug form and result UI
 - API unit and e2e tests
 - root and workspace README files
+- shared `packages/contracts` workspace with debug types and Zod schemas
 
 Current important limitation:
 
-- API and web duplicate the debug request/response types.
 - AI analysis is mocked inside the debug flow.
 - There is no isolated AI provider boundary yet.
 
@@ -66,6 +66,7 @@ packages/
   contracts/
     src/
       debug/
+        debug.constants.ts
         debug.schema.ts
         debug.types.ts
 ```
@@ -73,6 +74,8 @@ packages/
 The `debug` domain should not know whether the analysis comes from a mock provider, OpenAI, or another LLM provider. It should depend on an AI service boundary that returns validated structured data.
 
 ## Phase 1: Shared Contracts Package
+
+Status: completed.
 
 Goal: create a single source of truth for the debug API contract.
 

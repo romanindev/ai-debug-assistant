@@ -102,9 +102,12 @@ src/
     debug.service.ts
     dto/
       analyze-debug.dto.ts
-    types/
-      debug-analysis.type.ts
-      debug-context.type.ts
+```
+
+Shared debug request/response types and Zod schemas live in:
+
+```txt
+packages/contracts
 ```
 
 ## Current Status
@@ -112,6 +115,7 @@ src/
 - Health endpoint is implemented.
 - Debug analysis endpoint is implemented.
 - Request validation is enabled globally through `ValidationPipe`.
+- Debug context and response types come from `@ai-debug-assistant/contracts`.
 - Debug analysis response is mocked.
 - Unit and e2e tests cover the current API flow.
 

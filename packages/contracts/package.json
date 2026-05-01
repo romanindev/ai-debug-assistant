@@ -1,0 +1,31 @@
+{
+  "name": "@ai-debug-assistant/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./debug": {
+      "types": "./dist/debug/index.d.ts",
+      "default": "./dist/debug/index.js"
+    },
+    "./debug/constants": {
+      "types": "./dist/debug/debug.constants.d.ts",
+      "default": "./dist/debug/debug.constants.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  }
+}

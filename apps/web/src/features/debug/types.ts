@@ -1,22 +1,7 @@
-export const DEBUG_CONTEXTS = [
-  'react',
-  'node',
-  'nestjs',
-  'typescript',
-  'general',
-] as const;
+export { DEBUG_CONTEXTS } from '@ai-debug-assistant/contracts/debug/constants';
 
-export type DebugContext = (typeof DEBUG_CONTEXTS)[number];
-
-export type AnalyzeDebugRequest = {
-  errorText: string;
-  context: DebugContext;
-};
-
-export type DebugAnalysis = {
-  summary: string;
-  possibleCause: string;
-  suggestedFix: string;
-  codeExample?: string;
-  checklist: string[];
-};
+export type {
+  AnalyzeDebugRequest,
+  DebugAnalysis,
+  DebugContext,
+} from '@ai-debug-assistant/contracts';

@@ -88,6 +88,12 @@ src/
         useAnalyzeDebugMutation.ts
 ```
 
+Shared debug request/response types come from:
+
+```txt
+packages/contracts
+```
+
 ## API Usage
 
 All HTTP calls use the shared Axios client:
@@ -115,6 +121,7 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Loading, empty, error, and success states are implemented.
 - Result UI is structured for the current API response.
 - Styling uses Tailwind CSS utility classes.
+- Debug contract types are shared through `@ai-debug-assistant/contracts`.
 
 ## Next Web Steps
 

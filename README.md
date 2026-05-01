@@ -86,6 +86,9 @@ These parts may be added later as learning milestones.
 apps/
   api/   NestJS backend API
   web/   React frontend application
+
+packages/
+  contracts/   Shared API contracts and Zod schemas
 ```
 
 Workspace-specific documentation:

@@ -1,7 +1,7 @@
+import type { DebugAnalysis } from '@ai-debug-assistant/contracts';
 import { Injectable } from '@nestjs/common';
 
 import { AnalyzeDebugDto } from './dto/analyze-debug.dto';
-import { DebugAnalysis } from './types/debug-analysis.type';
 
 @Injectable()
 export class DebugService {
