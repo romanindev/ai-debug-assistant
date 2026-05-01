@@ -1,73 +1,124 @@
-# React + TypeScript + Vite
+# AI Debug Assistant Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for AI Debug Assistant.
 
-Currently, two official plugins are available:
+The web app lets a developer paste an error, log, or stack trace, choose a technical context, submit it to the API, and view structured debugging guidance.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Axios
+- TanStack React Query
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Environment
 
-## Expanding the ESLint configuration
+Create `apps/web/.env`:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_API_URL=http://localhost:3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The API should allow this frontend origin through `CORS_ORIGIN`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Commands
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Run from the repository root:
+
+```bash
+pnpm dev:web
+pnpm --filter web build
+pnpm --filter web lint
+pnpm --filter web preview
 ```
+
+For the full local flow:
+
+```bash
+pnpm dev:api
+pnpm dev:web
+```
+
+Then open:
+
+```txt
+http://localhost:5173
+```
+
+## Main Flow
+
+1. User pastes an error, log, or stack trace.
+2. User selects a context:
+   - React
+   - Node.js
+   - NestJS
+   - TypeScript
+   - General
+3. User submits the form.
+4. The app calls `POST /debug/analyze`.
+5. The UI renders:
+   - summary
+   - possible cause
+   - suggested fix
+   - code example
+   - checklist
+
+## Structure
+
+```txt
+src/
+  main.tsx
+  App.tsx
+  index.css
+  api/
+    httpClient.ts
+    queryClient.ts
+    health.ts
+  features/
+    health/
+      useHealthQuery.ts
+    debug/
+      DebugAssistantPage.tsx
+      types.ts
+      api/
+        analyzeDebug.ts
+      hooks/
+        useAnalyzeDebugMutation.ts
+```
+
+## API Usage
+
+All HTTP calls use the shared Axios client:
+
+```txt
+src/api/httpClient.ts
+```
+
+Server-state is handled through React Query:
+
+```txt
+src/api/queryClient.ts
+```
+
+The debug analysis action uses a mutation:
+
+```txt
+src/features/debug/hooks/useAnalyzeDebugMutation.ts
+```
+
+## Current Status
+
+- API health status is displayed in the header.
+- Debug form is implemented.
+- Loading, empty, error, and success states are implemented.
+- Result UI is structured for the current API response.
+- Styling uses Tailwind CSS utility classes.
+
+## Next Web Steps
+
+- Improve validation feedback from API errors.
+- Add request cancellation or disabled state refinement for repeated submits.
+- Add UI tests once the flow stabilizes.
+- Replace duplicated API contract types with a shared package when the contract starts changing frequently.

@@ -6,7 +6,7 @@ export class AppController {
   health() {
     return {
       status: 'ok',
-      service: 'ai-debug-assistant-api'
-    }
+      service: 'ai-debug-assistant-api',
+    };
   }
 }

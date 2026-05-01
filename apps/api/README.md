@@ -1,98 +1,124 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AI Debug Assistant API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS backend for AI Debug Assistant.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The API validates debugging input, exposes health and debug analysis endpoints, and returns a structured analysis response. The current analysis implementation is intentionally mocked so the product flow can be built before adding a real LLM provider.
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- NestJS
+- TypeScript
+- `@nestjs/config`
+- `class-validator`
+- `class-transformer`
+- Jest / Supertest
 
-## Project setup
+## Environment
+
+Create `apps/api/.env`:
 
 ```bash
-$ pnpm install
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
 ```
 
-## Compile and run the project
+## Commands
+
+Run from the repository root:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm dev:api
+pnpm --filter api build
+pnpm --filter api lint
+pnpm --filter api test
+pnpm --filter api test:e2e
 ```
 
-## Run tests
+## Endpoints
 
-```bash
-# unit tests
-$ pnpm run test
+### `GET /health`
 
-# e2e tests
-$ pnpm run test:e2e
+Returns API status.
 
-# test coverage
-$ pnpm run test:cov
+```json
+{
+  "status": "ok",
+  "service": "ai-debug-assistant-api"
+}
 ```
 
-## Deployment
+### `POST /debug/analyze`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Analyzes an error, log, or stack trace and returns structured debugging guidance.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Request:
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+```json
+{
+  "errorText": "TypeError: Cannot read properties of undefined",
+  "context": "react"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Allowed `context` values:
 
-## Resources
+```txt
+react
+node
+nestjs
+typescript
+general
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Response:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```json
+{
+  "summary": "Detected a react debugging issue: TypeError: Cannot read properties of undefined",
+  "possibleCause": "The issue is likely caused by a mismatch between the expected runtime state and the actual value or execution path.",
+  "suggestedFix": "Start by isolating the failing line, checking the relevant inputs, and verifying that the environment matches the code assumptions.",
+  "codeExample": "if (!data) return null;",
+  "checklist": [
+    "Read the first error line and identify the failing symbol or operation.",
+    "Inspect the stack trace from top to bottom until it reaches your application code.",
+    "Reproduce the issue with the smallest possible input or component state.",
+    "Add a focused guard, type check, or failing test before changing broader code."
+  ]
+}
+```
 
-## Support
+## Structure
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```txt
+src/
+  main.ts
+  app.module.ts
+  app.controller.ts
+  config/
+    configuration.ts
+  debug/
+    debug.module.ts
+    debug.controller.ts
+    debug.service.ts
+    dto/
+      analyze-debug.dto.ts
+    types/
+      debug-analysis.type.ts
+      debug-context.type.ts
+```
 
-## Stay in touch
+## Current Status
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Health endpoint is implemented.
+- Debug analysis endpoint is implemented.
+- Request validation is enabled globally through `ValidationPipe`.
+- Debug analysis response is mocked.
+- Unit and e2e tests cover the current API flow.
 
-## License
+## Next API Steps
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Add an isolated AI module.
+- Move prompt construction into readable prompt files.
+- Request structured JSON from the LLM provider.
+- Validate provider responses before returning them to the web app.
+- Add provider timeout/error handling.
