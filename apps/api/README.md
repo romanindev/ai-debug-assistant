@@ -106,6 +106,11 @@ src/
     ai-provider.interface.ts
     providers/
       mock-ai.provider.ts
+      openai.provider.ts
+    prompts/
+      debug-analysis.v1.prompt.ts
+    safety/
+      redact-sensitive-input.ts
   debug/
     debug.module.ts
     debug.controller.ts

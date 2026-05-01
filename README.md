@@ -67,7 +67,7 @@ Known limitations:
 - no rate limiting;
 - no observability setup;
 - no deployment configuration;
-- no sensitive-data handling strategy;
+- only basic sensitive-data redaction;
 - no production security hardening.
 
 These parts may be added later as learning milestones.

@@ -23,10 +23,14 @@ Implemented:
 - isolated API `AiModule` with `AiProvider` interface and `MockAiProvider`
 - `AI_PROVIDER` configuration with validated provider selection
 - OpenAI provider using the Responses API and structured output parsing
+- stable API error response shape for validation/provider failures
+- basic input redaction before external AI provider calls
+- UI warning about secrets in pasted logs
 
 Current important limitation:
 
-- provider-level errors are not mapped to stable API error categories yet.
+- OpenAI provider has not been verified with a real `OPENAI_API_KEY` yet.
+- AI calls do not have lightweight observability logs yet.
 
 ## Guiding Principles
 
@@ -346,6 +350,8 @@ Acceptance criteria:
 
 ## Phase 8: Lightweight Observability
 
+Status: next.
+
 Goal: make AI calls understandable during development.
 
 Track:
@@ -394,10 +400,10 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Improve provider-level error mapping.
-2. Add input safety and secret redaction before external provider calls.
-3. Add lightweight observability for AI calls.
-4. Improve frontend handling for validation and provider errors.
+1. Add lightweight observability for AI calls.
+2. Track provider name, prompt version, duration, success/failure, and error category.
+3. Ensure observability logs never include raw `errorText` or secrets.
+4. Verify the OpenAI provider manually with `OPENAI_API_KEY`.
 5. Decide whether persistence/history has enough product value to add.
 
 ## Decision Log
