@@ -2,7 +2,7 @@
 
 NestJS backend for AI Debug Assistant.
 
-The API validates debugging input, exposes health and debug analysis endpoints, and returns a structured analysis response. The current analysis implementation is intentionally mocked so the product flow can be built before adding a real LLM provider.
+The API validates debugging input, exposes health and debug analysis endpoints, and returns a structured analysis response. The analysis can run through a deterministic mock provider or through OpenAI, selected by `AI_PROVIDER`.
 
 ## Stack
 
@@ -20,6 +20,11 @@ Create `apps/api/.env`:
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
+AI_PROVIDER=mock
+LOG_ERROR=false
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+AI_REQUEST_TIMEOUT_MS=15000
 ```
 
 ## Commands
@@ -96,15 +101,29 @@ src/
   app.controller.ts
   config/
     configuration.ts
+  ai/
+    ai.module.ts
+    ai.service.ts
+    ai-provider.interface.ts
+    providers/
+      mock-ai.provider.ts
+      openai.provider.ts
+    prompts/
+      debug-analysis.v1.prompt.ts
+    safety/
+      redact-sensitive-input.ts
   debug/
     debug.module.ts
     debug.controller.ts
     debug.service.ts
     dto/
       analyze-debug.dto.ts
-    types/
-      debug-analysis.type.ts
-      debug-context.type.ts
+```
+
+Shared debug request/response types and Zod schemas live in:
+
+```txt
+packages/contracts
 ```
 
 ## Current Status
@@ -112,13 +131,15 @@ src/
 - Health endpoint is implemented.
 - Debug analysis endpoint is implemented.
 - Request validation is enabled globally through `ValidationPipe`.
-- Debug analysis response is mocked.
+- Debug context and response types come from `@ai-debug-assistant/contracts`.
+- Debug analysis is delegated through `AiService`.
+- Available AI providers are `MockAiProvider` and `OpenAiProvider`.
+- AI provider selection is configured through `AI_PROVIDER`.
+- OpenAI integration uses the Responses API with structured output validation.
+- API errors use a consistent `{ error: { code, message, details? } }` shape.
+- OpenAI provider input is redacted for common secrets before external calls.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Add an isolated AI module.
-- Move prompt construction into readable prompt files.
-- Request structured JSON from the LLM provider.
-- Validate provider responses before returning them to the web app.
-- Add provider timeout/error handling.
+- Add lightweight observability for AI calls.

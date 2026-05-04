@@ -2,7 +2,7 @@
 
 AI Debug Assistant is a full-stack pet project for exploring AI-powered application development.
 
-The project is built as a small monorepo where a developer can paste an error, log, or stack trace, choose a technical context, and receive structured debugging guidance. At the current stage the analysis response is mocked, because the first goal is to build the product flow, API contract, validation, and UI before connecting a real LLM provider.
+The project is built as a small monorepo where a developer can paste an error, log, or stack trace, choose a technical context, and receive structured debugging guidance. The app supports a deterministic mock provider for local development and an OpenAI provider for real LLM-backed analysis.
 
 ## Purpose
 
@@ -48,7 +48,10 @@ The current flow:
 - Monorepo foundation is in place.
 - API health endpoint is implemented.
 - `POST /debug/analyze` is implemented with request validation.
-- Debug analysis currently returns a mock structured response.
+- Debug analysis can run through the mock provider or the OpenAI provider.
+- OpenAI integration uses structured output parsing against the shared contract schema.
+- API and web handle validation/provider errors through a stable error response shape.
+- Common secrets are redacted before external AI provider calls.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
 - API unit and e2e tests cover the current backend flow.
@@ -59,13 +62,12 @@ This repository is not intended to be production-ready.
 
 Known limitations:
 
-- no real LLM provider integration yet;
 - no authentication;
 - no persistence or user history;
 - no rate limiting;
 - no observability setup;
 - no deployment configuration;
-- no sensitive-data handling strategy;
+- only basic sensitive-data redaction;
 - no production security hardening.
 
 These parts may be added later as learning milestones.
@@ -78,7 +80,7 @@ These parts may be added later as learning milestones.
 - Data fetching: Axios, TanStack React Query
 - Infrastructure: Docker Compose
 - Testing: Jest, Supertest
-- AI integration: planned LLM provider integration
+- AI integration: provider interface, mock provider, OpenAI provider
 
 ## Repository Structure
 
@@ -86,6 +88,9 @@ These parts may be added later as learning milestones.
 apps/
   api/   NestJS backend API
   web/   React frontend application
+
+packages/
+  contracts/   Shared API contracts and Zod schemas
 ```
 
 Workspace-specific documentation:
@@ -102,12 +107,18 @@ API:
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
+AI_PROVIDER=mock
+LOG_ERROR=false
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+AI_REQUEST_TIMEOUT_MS=15000
 ```
 
 Web:
 
 ```bash
 VITE_API_URL=http://localhost:3000
+VITE_API_TIMEOUT_MS=60000
 ```
 
 ## Install
@@ -183,14 +194,11 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Stabilize the full mock flow.
-2. Add shared API contract types when duplication becomes painful.
-3. Add an isolated AI module in the API.
-4. Integrate an LLM provider.
-5. Request and validate structured JSON output from the model.
-6. Add timeout and error handling around provider calls.
-7. Improve frontend error handling for validation and provider errors.
-8. Optionally add persistence for analysis history.
+1. Improve provider-level error handling.
+2. Add input safety and secret redaction before external provider calls.
+3. Add lightweight observability for AI calls.
+4. Improve frontend handling for validation and provider errors.
+5. Optionally add persistence for analysis history.
 
 ## License
 

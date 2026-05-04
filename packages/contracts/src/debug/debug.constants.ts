@@ -5,5 +5,3 @@ export const DEBUG_CONTEXTS = [
   'typescript',
   'general',
 ] as const;
-
-export type DebugContext = (typeof DEBUG_CONTEXTS)[number];

@@ -19,6 +19,7 @@ Create `apps/web/.env`:
 
 ```bash
 VITE_API_URL=http://localhost:3000
+VITE_API_TIMEOUT_MS=60000
 ```
 
 The API should allow this frontend origin through `CORS_ORIGIN`.
@@ -88,6 +89,12 @@ src/
         useAnalyzeDebugMutation.ts
 ```
 
+Shared debug request/response types come from:
+
+```txt
+packages/contracts
+```
+
 ## API Usage
 
 All HTTP calls use the shared Axios client:
@@ -115,10 +122,12 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Loading, empty, error, and success states are implemented.
 - Result UI is structured for the current API response.
 - Styling uses Tailwind CSS utility classes.
+- Debug contract types are shared through `@ai-debug-assistant/contracts`.
+- API validation/provider errors are rendered as user-facing messages.
+- The input form warns users to review logs for secrets before submitting.
 
 ## Next Web Steps
 
-- Improve validation feedback from API errors.
 - Add request cancellation or disabled state refinement for repeated submits.
 - Add UI tests once the flow stabilizes.
-- Replace duplicated API contract types with a shared package when the contract starts changing frequently.
+- Add copy actions for generated analysis and code examples.

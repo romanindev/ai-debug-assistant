@@ -19,12 +19,18 @@ Implemented:
 - frontend debug form and result UI
 - API unit and e2e tests
 - root and workspace README files
+- shared `packages/contracts` workspace with debug types and Zod schemas
+- isolated API `AiModule` with `AiProvider` interface and `MockAiProvider`
+- `AI_PROVIDER` configuration with validated provider selection
+- OpenAI provider using the Responses API and structured output parsing
+- stable API error response shape for validation/provider failures
+- basic input redaction before external AI provider calls
+- UI warning about secrets in pasted logs
 
 Current important limitation:
 
-- API and web duplicate the debug request/response types.
-- AI analysis is mocked inside the debug flow.
-- There is no isolated AI provider boundary yet.
+- OpenAI provider has not been verified with a real `OPENAI_API_KEY` yet.
+- AI calls do not have lightweight observability logs yet.
 
 ## Guiding Principles
 
@@ -66,6 +72,7 @@ packages/
   contracts/
     src/
       debug/
+        debug.constants.ts
         debug.schema.ts
         debug.types.ts
 ```
@@ -73,6 +80,8 @@ packages/
 The `debug` domain should not know whether the analysis comes from a mock provider, OpenAI, or another LLM provider. It should depend on an AI service boundary that returns validated structured data.
 
 ## Phase 1: Shared Contracts Package
+
+Status: completed.
 
 Goal: create a single source of truth for the debug API contract.
 
@@ -129,6 +138,8 @@ Notes:
 
 ## Phase 2: AI Module With Provider Interface
 
+Status: completed.
+
 Goal: introduce an AI boundary without adding a real external provider yet.
 
 Add API module:
@@ -175,6 +186,8 @@ Acceptance criteria:
 
 ## Phase 3: Provider Selection Through Configuration
 
+Status: completed.
+
 Goal: make the AI provider switchable through environment configuration.
 
 Add config:
@@ -208,6 +221,8 @@ Acceptance criteria:
 - Provider-specific details do not leak into `DebugController`.
 
 ## Phase 4: OpenAI Provider
+
+Status: completed.
 
 Goal: add a real LLM provider without changing the debug API contract.
 
@@ -246,6 +261,8 @@ Acceptance criteria:
 
 ## Phase 5: Prompt Versioning
 
+Status: completed.
+
 Goal: make prompt changes explicit and reviewable.
 
 Prompt files:
@@ -275,6 +292,8 @@ Acceptance criteria:
 
 ## Phase 6: Error Handling And Frontend Feedback
 
+Status: completed.
+
 Goal: handle expected API and AI failures intentionally.
 
 Backend error categories:
@@ -302,6 +321,8 @@ Acceptance criteria:
 
 ## Phase 7: Input Safety And Redaction
 
+Status: completed.
+
 Goal: reduce the risk of sending sensitive data to an external LLM.
 
 Possible additions:
@@ -328,6 +349,8 @@ Acceptance criteria:
 - UI communicates that pasted logs may contain sensitive data.
 
 ## Phase 8: Lightweight Observability
+
+Status: next.
 
 Goal: make AI calls understandable during development.
 
@@ -377,11 +400,11 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Implement `packages/contracts` with Zod schemas.
-2. Replace duplicated API/web debug types with shared contract types.
-3. Add tests around contract validation where useful.
-4. Introduce `AiModule` and `AiProvider` interface.
-5. Move current mock response behind `MockAiProvider`.
+1. Add lightweight observability for AI calls.
+2. Track provider name, prompt version, duration, success/failure, and error category.
+3. Ensure observability logs never include raw `errorText` or secrets.
+4. Verify the OpenAI provider manually with `OPENAI_API_KEY`.
+5. Decide whether persistence/history has enough product value to add.
 
 ## Decision Log
 

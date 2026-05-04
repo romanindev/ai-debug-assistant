@@ -2,10 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { ApiExceptionFilter } from './../src/common/filters/api-exception.filter';
 import { AppModule } from './../src/app.module';
 
 type ValidationErrorResponse = {
-  message: string[];
+  error: {
+    code: string;
+    message: string;
+    details: string[];
+  };
 };
 
 describe('AppController (e2e)', () => {
@@ -24,6 +29,7 @@ describe('AppController (e2e)', () => {
         transform: true,
       }),
     );
+    app.useGlobalFilters(new ApiExceptionFilter());
     await app.init();
   });
 
@@ -73,7 +79,9 @@ describe('AppController (e2e)', () => {
       .expect(({ body }) => {
         const responseBody = body as ValidationErrorResponse;
 
-        expect(responseBody.message).toEqual(
+        expect(responseBody.error.code).toBe('VALIDATION_ERROR');
+        expect(responseBody.error.message).toBe('Request validation failed.');
+        expect(responseBody.error.details).toEqual(
           expect.arrayContaining([
             'property extra should not exist',
             'errorText must be longer than or equal to 10 characters',

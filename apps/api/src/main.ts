@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,7 @@ async function bootstrap() {
 
   const corsOrigin = configService.getOrThrow<string>('cors.origin');
   const port = configService.getOrThrow<number>('port');
+  const logErrors = configService.get<boolean>('logging.logError') ?? false;
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,6 +19,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new ApiExceptionFilter({ logErrors }));
 
   app.enableCors({
     origin: corsOrigin,
