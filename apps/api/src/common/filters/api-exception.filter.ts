@@ -127,8 +127,6 @@ export class ApiExceptionFilter implements ExceptionFilter {
   }
 
   private logError(message: unknown, trace?: string): void {
-    console.log(this.logErrors)
-
     if (!this.logErrors) {
       return;
     }

@@ -16,3 +16,13 @@ export const debugAnalysisSchema = z.object({
   codeExample: z.string().min(1).nullable(),
   checklist: z.array(z.string().min(1)).min(1),
 });
+
+export const persistedDebugAnalysisSchema = z.object({
+  id: z.string().uuid(),
+  createdAt: z.string().datetime(),
+  context: debugContextSchema,
+  errorText: z.string().min(1),
+  provider: z.string().min(1),
+  promptVersion: z.string().min(1),
+  analysis: debugAnalysisSchema,
+});

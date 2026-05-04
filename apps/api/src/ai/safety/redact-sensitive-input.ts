@@ -10,7 +10,7 @@ const REDACTION_RULES: RedactionRule[] = [
   },
   {
     pattern:
-      /\b(?:api[_-]?key|access[_-]?token|auth[_-]?token|token|secret|password)\s*[:=]\s*['"]?[^'"\s,;]+/gi,
+      /\b(?:[a-z0-9_]*api[_-]?key|access[_-]?token|auth[_-]?token|token|secret|password)\s*[:=]\s*['"]?(?!\[REDACTED_)[^'"\s,;]+/gi,
     replacement: (match: string) => {
       const separator = match.includes('=') ? '=' : ':';
       const key = match.split(separator)[0]?.trim() ?? 'secret';

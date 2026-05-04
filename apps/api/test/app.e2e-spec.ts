@@ -15,6 +15,13 @@ type ValidationErrorResponse = {
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
+  const originalAiProvider = process.env.AI_PROVIDER;
+  const originalPersistAnalyses = process.env.PERSIST_ANALYSES;
+
+  beforeAll(() => {
+    process.env.AI_PROVIDER = 'mock';
+    process.env.PERSIST_ANALYSES = 'false';
+  });
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -91,7 +98,43 @@ describe('AppController (e2e)', () => {
       });
   });
 
+  it('/debug/analyses (GET) returns empty history when persistence is disabled', () => {
+    return request(app.getHttpServer())
+      .get('/debug/analyses')
+      .expect(200)
+      .expect([]);
+  });
+
+  it('/debug/analyses/:id (GET) returns not found when analysis does not exist', () => {
+    return request(app.getHttpServer())
+      .get('/debug/analyses/4fd0459d-c9de-4dfa-b573-a6506202fb8f')
+      .expect(404)
+      .expect(({ body }) => {
+        expect(body).toEqual({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Request could not be completed.',
+          },
+        });
+      });
+  });
+
   afterEach(async () => {
     await app.close();
+  });
+
+  afterAll(() => {
+    if (originalAiProvider === undefined) {
+      delete process.env.AI_PROVIDER;
+    } else {
+      process.env.AI_PROVIDER = originalAiProvider;
+    }
+
+    if (originalPersistAnalyses === undefined) {
+      delete process.env.PERSIST_ANALYSES;
+      return;
+    }
+
+    process.env.PERSIST_ANALYSES = originalPersistAnalyses;
   });
 });

@@ -3,6 +3,12 @@ export default () => ({
   logging: {
     logError: parseBooleanFlag(process.env.LOG_ERROR),
   },
+  persistence: {
+    persistAnalyses: parseBooleanFlag(process.env.PERSIST_ANALYSES),
+  },
+  database: {
+    url: process.env.DATABASE_URL,
+  },
   cors: {
     origin: process.env.CORS_ORIGIN,
   },

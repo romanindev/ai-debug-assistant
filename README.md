@@ -52,8 +52,11 @@ The current flow:
 - OpenAI integration uses structured output parsing against the shared contract schema.
 - API and web handle validation/provider errors through a stable error response shape.
 - Common secrets are redacted before external AI provider calls.
+- Lightweight AI call observability is implemented.
+- Optional PostgreSQL analysis persistence is available through `PERSIST_ANALYSES=true`.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
+- Web supports retry, copy actions, clearer errors, and preserving the last successful result.
 - API unit and e2e tests cover the current backend flow.
 
 ## Not Production Ready
@@ -63,9 +66,8 @@ This repository is not intended to be production-ready.
 Known limitations:
 
 - no authentication;
-- no persistence or user history;
+- no user-scoped history yet;
 - no rate limiting;
-- no observability setup;
 - no deployment configuration;
 - only basic sensitive-data redaction;
 - no production security hardening.
@@ -102,19 +104,34 @@ Workspace-specific documentation:
 
 Create local environment files from `.env.example`.
 
-API:
+Root `.env`:
+
+Used by `docker-compose.yml`.
+
+```bash
+POSTGRES_USER=app
+POSTGRES_PASSWORD=app
+POSTGRES_DB=ai_debug_assistant
+POSTGRES_PORT=5432
+```
+
+API `apps/api/.env`:
 
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AI_PROVIDER=mock
 LOG_ERROR=false
+PERSIST_ANALYSES=false
+DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
 AI_REQUEST_TIMEOUT_MS=15000
 ```
 
-Web:
+Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
+
+Web `apps/web/.env`:
 
 ```bash
 VITE_API_URL=http://localhost:3000
@@ -194,11 +211,8 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Improve provider-level error handling.
-2. Add input safety and secret redaction before external provider calls.
-3. Add lightweight observability for AI calls.
-4. Improve frontend handling for validation and provider errors.
-5. Optionally add persistence for analysis history.
+1. Add authentication with registration and login.
+2. Scope persisted analysis history to authenticated users.
 
 ## License
 
