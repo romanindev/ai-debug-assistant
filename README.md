@@ -194,9 +194,8 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Improve provider-level error categories.
-2. Improve frontend retry, timeout, and copy-result UX.
-3. Add optional persistence for analysis history as the final planned feature phase.
+1. Improve frontend retry, timeout, and copy-result UX.
+2. Add optional persistence for analysis history as the final planned feature phase.
 
 ## License
 

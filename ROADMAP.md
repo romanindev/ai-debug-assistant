@@ -376,7 +376,7 @@ Acceptance criteria:
 
 ## Phase 9: Provider Error Taxonomy
 
-Status: next.
+Status: completed.
 
 Goal: make provider failures easier to diagnose and present safely.
 
@@ -404,6 +404,8 @@ Acceptance criteria:
 - Existing mock flow and tests remain deterministic.
 
 ## Phase 10: Frontend Result UX
+
+Status: next.
 
 Goal: make the web app more useful after real provider calls.
 
@@ -449,10 +451,9 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Split provider failures into clearer categories.
-2. Use provider error categories in backend logs and API responses.
-3. Improve web retry/copy/timeout UX.
-4. Keep persistence/history as the final planned feature phase.
+1. Improve web retry/copy/timeout UX.
+2. Preserve the last successful result when a later request fails.
+3. Keep persistence/history as the final planned feature phase.
 
 ## Decision Log
 

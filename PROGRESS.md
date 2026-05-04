@@ -34,8 +34,9 @@ The default local mode uses `AI_PROVIDER=mock`, so the app can run without exter
 - `VITE_API_TIMEOUT_MS` for frontend request timeout configuration
 - centralized web app config in `apps/web/src/config/appConfig.ts`
 - lightweight backend observability logs for AI calls
+- provider error taxonomy for timeout, auth/config, rate limit, malformed response, and generic provider failures
 - root and workspace README files
-- roadmap phases 1-8 completed
+- roadmap phases 1-9 completed
 
 ## Verification
 
@@ -60,20 +61,21 @@ Manual OpenAI verification has been completed with:
 - Keep `AI_PROVIDER=mock` as the default for local development and automated tests.
 - Do not log raw `errorText`.
 - Do not remove the mock provider after OpenAI verification.
-- Do not log raw `errorText`.
 - AI observability logs should include metadata only: provider, prompt version, duration, status, and error category.
+- Provider errors should expose safe public messages while preserving raw provider failures only as internal causes.
 - `packages/contracts` intentionally builds both ESM and CJS output:
   - ESM for Vite/web;
   - CJS for Jest/API compatibility.
 
 ## Next Phase
 
-Next roadmap phase: **Phase 9: Provider Error Taxonomy**.
+Next roadmap phase: **Phase 10: Frontend Result UX**.
 
 Implementation target:
 
-- split provider failures into clearer categories such as timeout, auth/config, rate limit, malformed response, and generic provider error;
-- keep frontend-facing messages safe and stable;
-- use the new categories in observability logs.
+- add retry action after provider failures;
+- add copy actions for generated code example and full analysis;
+- preserve the last successful result when a later request fails;
+- improve timeout/error messages in the UI.
 
 Persistence/history remains intentionally delayed until the final phase.

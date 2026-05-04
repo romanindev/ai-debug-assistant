@@ -13,6 +13,10 @@ import type { AiProvider } from '../ai-provider.interface';
 import { buildDebugAnalysisPrompt } from '../prompts/debug-analysis.v1.prompt';
 import { redactSensitiveInput } from '../safety/redact-sensitive-input';
 
+type OpenAiApiError = Error & {
+  readonly status?: number;
+};
+
 @Injectable()
 export class OpenAiProvider implements AiProvider {
   readonly name = 'openai';
@@ -24,7 +28,11 @@ export class OpenAiProvider implements AiProvider {
     const model = this.configService.get<string>('ai.openai.model');
 
     if (!model) {
-      throw new Error('OPENAI_MODEL is required when AI_PROVIDER=openai.');
+      throw new AiProviderError(
+        'AI_PROVIDER_CONFIG_ERROR',
+        'AI provider is not configured correctly.',
+        500,
+      );
     }
 
     const redactedInput: AnalyzeDebugRequest = {
@@ -51,12 +59,7 @@ export class OpenAiProvider implements AiProvider {
         },
       })
       .catch((error: unknown) => {
-        throw new AiProviderError(
-          'AI_PROVIDER_ERROR',
-          'AI provider request failed.',
-          502,
-          error instanceof Error ? { cause: error } : undefined,
-        );
+        throw toAiProviderError(error);
       });
 
     if (!response.output_parsed) {
@@ -88,9 +91,92 @@ export class OpenAiProvider implements AiProvider {
     const apiKey = this.configService.get<string>('ai.openai.apiKey');
 
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY is required when AI_PROVIDER=openai.');
+      throw new AiProviderError(
+        'AI_PROVIDER_CONFIG_ERROR',
+        'OPENAI_API_KEY is required when AI_PROVIDER=openai.',
+        500,
+      );
     }
 
     return apiKey;
   }
+}
+
+export function toAiProviderError(error: unknown): AiProviderError {
+  if (error instanceof OpenAI.APIConnectionTimeoutError) {
+    return new AiProviderError(
+      'AI_PROVIDER_TIMEOUT',
+      'AI provider request timed out.',
+      504,
+      { cause: error },
+    );
+  }
+
+  if (
+    error instanceof OpenAI.AuthenticationError ||
+    error instanceof OpenAI.PermissionDeniedError
+  ) {
+    return new AiProviderError(
+      'AI_PROVIDER_AUTH_ERROR',
+      'AI provider authentication failed.',
+      502,
+      { cause: error },
+    );
+  }
+
+  if (error instanceof OpenAI.RateLimitError) {
+    return new AiProviderError(
+      'AI_PROVIDER_RATE_LIMITED',
+      'AI provider rate limit exceeded.',
+      429,
+      { cause: error },
+    );
+  }
+
+  if (error instanceof OpenAI.APIError) {
+    return mapOpenAiApiError(error);
+  }
+
+  return new AiProviderError(
+    'AI_PROVIDER_ERROR',
+    'AI provider request failed.',
+    502,
+    error instanceof Error ? { cause: error } : undefined,
+  );
+}
+
+function mapOpenAiApiError(error: OpenAiApiError): AiProviderError {
+  if (error.status === 408) {
+    return new AiProviderError(
+      'AI_PROVIDER_TIMEOUT',
+      'AI provider request timed out.',
+      504,
+      { cause: error },
+    );
+  }
+
+  if (error.status === 401 || error.status === 403) {
+    return new AiProviderError(
+      'AI_PROVIDER_AUTH_ERROR',
+      'AI provider authentication failed.',
+      502,
+      { cause: error },
+    );
+  }
+
+  if (error.status === 429) {
+    return new AiProviderError(
+      'AI_PROVIDER_RATE_LIMITED',
+      'AI provider rate limit exceeded.',
+      429,
+      { cause: error },
+    );
+  }
+
+  return new AiProviderError(
+    'AI_PROVIDER_ERROR',
+    'AI provider request failed.',
+    502,
+    { cause: error },
+  );
 }
