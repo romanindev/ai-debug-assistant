@@ -15,6 +15,8 @@ import { redactSensitiveInput } from '../safety/redact-sensitive-input';
 
 @Injectable()
 export class OpenAiProvider implements AiProvider {
+  readonly name = 'openai';
+
   constructor(private readonly configService: ConfigService) {}
 
   async analyzeDebug(input: AnalyzeDebugRequest): Promise<DebugAnalysis> {

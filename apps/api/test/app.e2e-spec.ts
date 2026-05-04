@@ -15,6 +15,11 @@ type ValidationErrorResponse = {
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
+  const originalAiProvider = process.env.AI_PROVIDER;
+
+  beforeAll(() => {
+    process.env.AI_PROVIDER = 'mock';
+  });
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -93,5 +98,14 @@ describe('AppController (e2e)', () => {
 
   afterEach(async () => {
     await app.close();
+  });
+
+  afterAll(() => {
+    if (originalAiProvider === undefined) {
+      delete process.env.AI_PROVIDER;
+      return;
+    }
+
+    process.env.AI_PROVIDER = originalAiProvider;
   });
 });

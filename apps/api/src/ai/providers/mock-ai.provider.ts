@@ -9,6 +9,8 @@ import type { AiProvider } from '../ai-provider.interface';
 
 @Injectable()
 export class MockAiProvider implements AiProvider {
+  readonly name = 'mock';
+
   analyzeDebug({
     context,
     errorText,

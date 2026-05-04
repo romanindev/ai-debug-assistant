@@ -194,11 +194,9 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Improve provider-level error handling.
-2. Add input safety and secret redaction before external provider calls.
-3. Add lightweight observability for AI calls.
-4. Improve frontend handling for validation and provider errors.
-5. Optionally add persistence for analysis history.
+1. Improve provider-level error categories.
+2. Improve frontend retry, timeout, and copy-result UX.
+3. Add optional persistence for analysis history as the final planned feature phase.
 
 ## License
 

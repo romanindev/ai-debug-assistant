@@ -1,5 +1,7 @@
 import type { AnalyzeDebugRequest } from '@ai-debug-assistant/contracts';
 
+export const DEBUG_ANALYSIS_PROMPT_VERSION = 'debug-analysis.v1';
+
 export function buildDebugAnalysisPrompt({
   context,
   errorText,

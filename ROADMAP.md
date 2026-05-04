@@ -29,8 +29,8 @@ Implemented:
 
 Current important limitation:
 
-- OpenAI provider has not been verified with a real `OPENAI_API_KEY` yet.
-- AI calls do not have lightweight observability logs yet.
+- Provider error categories are still coarse.
+- Persistence/history is intentionally delayed until the final phase.
 
 ## Guiding Principles
 
@@ -350,7 +350,7 @@ Acceptance criteria:
 
 ## Phase 8: Lightweight Observability
 
-Status: next.
+Status: completed.
 
 Goal: make AI calls understandable during development.
 
@@ -374,7 +374,56 @@ Acceptance criteria:
 - Logs contain enough metadata to debug behavior.
 - Logs avoid sensitive payloads.
 
-## Phase 9: Optional Persistence
+## Phase 9: Provider Error Taxonomy
+
+Status: next.
+
+Goal: make provider failures easier to diagnose and present safely.
+
+Potential categories:
+
+- provider timeout;
+- provider authentication/configuration error;
+- provider rate limit;
+- malformed provider response;
+- generic provider failure;
+- unknown internal failure.
+
+Responsibilities:
+
+- keep provider-specific raw errors inside the API;
+- expose stable public messages to the frontend;
+- record useful categories in observability logs;
+- avoid exposing API keys, stack traces, or provider internals.
+
+Acceptance criteria:
+
+- Timeout, auth/config, rate-limit, malformed response, and generic failures have distinct backend categories.
+- Frontend receives safe, user-facing messages.
+- Observability logs use the same categories.
+- Existing mock flow and tests remain deterministic.
+
+## Phase 10: Frontend Result UX
+
+Goal: make the web app more useful after real provider calls.
+
+Potential additions:
+
+- retry action after provider failures;
+- copy generated code example;
+- copy full analysis;
+- preserve the last successful result when a later request fails;
+- clearer timeout/error messages.
+
+Acceptance criteria:
+
+- Failed requests are recoverable from the UI.
+- Generated output is easy to reuse.
+- The primary debug flow remains simple and focused.
+
+## Phase 11: Optional Persistence
+
+Status: final planned feature phase.
 
 Goal: add storage only when there is a real product reason.
 
@@ -400,11 +449,10 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Add lightweight observability for AI calls.
-2. Track provider name, prompt version, duration, success/failure, and error category.
-3. Ensure observability logs never include raw `errorText` or secrets.
-4. Verify the OpenAI provider manually with `OPENAI_API_KEY`.
-5. Decide whether persistence/history has enough product value to add.
+1. Split provider failures into clearer categories.
+2. Use provider error categories in backend logs and API responses.
+3. Improve web retry/copy/timeout UX.
+4. Keep persistence/history as the final planned feature phase.
 
 ## Decision Log
 
