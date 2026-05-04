@@ -52,8 +52,11 @@ The current flow:
 - OpenAI integration uses structured output parsing against the shared contract schema.
 - API and web handle validation/provider errors through a stable error response shape.
 - Common secrets are redacted before external AI provider calls.
+- Lightweight AI call observability is implemented.
+- Optional PostgreSQL analysis persistence is available through `PERSIST_ANALYSES=true`.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
+- Web supports retry, copy actions, clearer errors, and preserving the last successful result.
 - API unit and e2e tests cover the current backend flow.
 
 ## Not Production Ready
@@ -63,9 +66,8 @@ This repository is not intended to be production-ready.
 Known limitations:
 
 - no authentication;
-- no persistence or user history;
+- no user-scoped history yet;
 - no rate limiting;
-- no observability setup;
 - no deployment configuration;
 - only basic sensitive-data redaction;
 - no production security hardening.
@@ -209,7 +211,8 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Add optional persistence for analysis history as the final planned feature phase.
+1. Add authentication with registration and login.
+2. Scope persisted analysis history to authenticated users.
 
 ## License
 

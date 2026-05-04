@@ -36,8 +36,10 @@ The default local mode uses `AI_PROVIDER=mock`, so the app can run without exter
 - lightweight backend observability logs for AI calls
 - provider error taxonomy for timeout, auth/config, rate limit, malformed response, and generic provider failures
 - frontend retry, copy-result, timeout-message, and last-successful-result UX
+- optional PostgreSQL analysis persistence behind `PERSIST_ANALYSES=true`
+- persisted analysis list/detail endpoints
 - root and workspace README files
-- roadmap phases 1-10 completed
+- roadmap phases 1-11 completed
 
 ## Verification
 
@@ -64,19 +66,20 @@ Manual OpenAI verification has been completed with:
 - Do not remove the mock provider after OpenAI verification.
 - AI observability logs should include metadata only: provider, prompt version, duration, status, and error category.
 - Provider errors should expose safe public messages while preserving raw provider failures only as internal causes.
+- Persistence is optional and controlled by `PERSIST_ANALYSES=true`.
+- Persisted analysis history is currently system-level/local history; Phase 12 should make it user-scoped.
 - `packages/contracts` intentionally builds both ESM and CJS output:
   - ESM for Vite/web;
   - CJS for Jest/API compatibility.
 
 ## Next Phase
 
-Next roadmap phase: **Phase 11: Optional Persistence**.
+Next roadmap phase: **Phase 12: Authentication And User-Scoped History**.
 
 Implementation target:
 
-- add optional analysis persistence behind `PERSIST_ANALYSES=true`;
-- persist successful analyses only when persistence is enabled;
-- keep the existing stateless debug flow working when persistence is disabled;
-- add auth as the following roadmap phase so persisted history can become user-scoped.
-
-After persistence, the next planned phase is authentication with registration, login, header links, and user-scoped persisted history.
+- add registration and login on the API;
+- add secure password hashing;
+- use authenticated requests to scope persisted analysis history to the current user;
+- add web registration/login pages and header auth links;
+- keep logged-out users able to run the stateless debug flow.

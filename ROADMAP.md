@@ -425,7 +425,7 @@ Acceptance criteria:
 
 ## Phase 11: Optional Persistence
 
-Status: next.
+Status: completed.
 
 Goal: add optional storage for analysis history without making the base debug flow depend on a database.
 
@@ -465,7 +465,7 @@ Acceptance criteria:
 
 ## Phase 12: Authentication And User-Scoped History
 
-Status: planned.
+Status: next.
 
 Goal: add user accounts so persisted history belongs to authenticated users.
 
@@ -473,9 +473,10 @@ Scope:
 
 - API registration and login;
 - password hashing;
-- session or token-based authentication;
+- JWT access token in an httpOnly cookie;
 - authenticated current-user endpoint;
 - user-owned persisted analyses;
+- migration path from current system-level history to user-owned history;
 - web registration and login pages;
 - header links for login/register when logged out;
 - header user/logout controls when logged in.
@@ -486,12 +487,16 @@ Acceptance criteria:
 - Logged-in users can create and view their own persisted analysis history.
 - Logged-out users can still use the stateless debug flow when persistence/auth does not require an account.
 - Analysis history is not shared across users.
+- Auth secrets are configured through environment variables and are not committed.
+- Password hashes are stored, never plaintext passwords.
 
 ## Suggested Immediate Next Steps
 
-1. Add `PERSIST_ANALYSES=true` and `DATABASE_URL` config.
-2. Add a minimal persistence module and schema for saved analyses.
-3. Keep auth as the next phase and scope persisted history to users there.
+1. Add auth config such as `AUTH_JWT_SECRET` and cookie settings.
+2. Add users table and auth service/controller.
+3. Add register/login/me/logout endpoints.
+4. Scope persisted analyses to the authenticated user.
+5. Add web register/login pages and header auth controls.
 
 ## Decision Log
 
