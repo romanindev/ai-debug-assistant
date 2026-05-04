@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -19,6 +20,20 @@ type ApiErrorBody = {
 
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
+  private readonly logger: Logger;
+  private readonly logErrors: boolean;
+
+  constructor({
+    logger = new Logger(ApiExceptionFilter.name),
+    logErrors = false,
+  }: {
+    logger?: Logger;
+    logErrors?: boolean;
+  } = {}) {
+    this.logger = logger;
+    this.logErrors = logErrors;
+  }
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
     const { status, body } = this.toErrorResponse(exception);
@@ -30,7 +45,11 @@ export class ApiExceptionFilter implements ExceptionFilter {
     status: number;
     body: ApiErrorBody;
   } {
+    this.logError(exception);
+
     if (exception instanceof AiProviderError) {
+      this.logError(exception.message, exception.stack);
+
       return {
         status: exception.status,
         body: {
@@ -105,6 +124,16 @@ export class ApiExceptionFilter implements ExceptionFilter {
     }
 
     return 'HTTP_ERROR';
+  }
+
+  private logError(message: unknown, trace?: string): void {
+    console.log(this.logErrors)
+
+    if (!this.logErrors) {
+      return;
+    }
+
+    this.logger.error(message, trace);
   }
 }
 

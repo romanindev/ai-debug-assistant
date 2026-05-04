@@ -19,6 +19,7 @@ Create `apps/web/.env`:
 
 ```bash
 VITE_API_URL=http://localhost:3000
+VITE_API_TIMEOUT_MS=60000
 ```
 
 The API should allow this frontend origin through `CORS_ORIGIN`.

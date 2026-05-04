@@ -1,5 +1,8 @@
 export default () => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
+  logging: {
+    logError: parseBooleanFlag(process.env.LOG_ERROR),
+  },
   cors: {
     origin: process.env.CORS_ORIGIN,
   },
@@ -15,3 +18,11 @@ export default () => ({
     },
   },
 });
+
+function parseBooleanFlag(value: string | undefined): boolean {
+  if (value === undefined) {
+    return false;
+  }
+
+  return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
+}

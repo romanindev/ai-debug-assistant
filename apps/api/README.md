@@ -21,6 +21,7 @@ Create `apps/api/.env`:
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AI_PROVIDER=mock
+LOG_ERROR=false
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
 AI_REQUEST_TIMEOUT_MS=15000
