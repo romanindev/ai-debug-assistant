@@ -405,7 +405,7 @@ Acceptance criteria:
 
 ## Phase 10: Frontend Result UX
 
-Status: next.
+Status: completed.
 
 Goal: make the web app more useful after real provider calls.
 
@@ -425,7 +425,7 @@ Acceptance criteria:
 
 ## Phase 11: Optional Persistence
 
-Status: final planned feature phase.
+Status: next and final planned feature phase.
 
 Goal: add storage only when there is a real product reason.
 
@@ -451,9 +451,9 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Improve web retry/copy/timeout UX.
-2. Preserve the last successful result when a later request fails.
-3. Keep persistence/history as the final planned feature phase.
+1. Decide whether analysis history has enough product value for this project.
+2. If persistence is added, keep the database schema minimal.
+3. Keep the existing analyze flow working without unnecessary coupling.
 
 ## Decision Log
 

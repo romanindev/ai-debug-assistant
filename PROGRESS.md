@@ -35,8 +35,9 @@ The default local mode uses `AI_PROVIDER=mock`, so the app can run without exter
 - centralized web app config in `apps/web/src/config/appConfig.ts`
 - lightweight backend observability logs for AI calls
 - provider error taxonomy for timeout, auth/config, rate limit, malformed response, and generic provider failures
+- frontend retry, copy-result, timeout-message, and last-successful-result UX
 - root and workspace README files
-- roadmap phases 1-9 completed
+- roadmap phases 1-10 completed
 
 ## Verification
 
@@ -69,13 +70,12 @@ Manual OpenAI verification has been completed with:
 
 ## Next Phase
 
-Next roadmap phase: **Phase 10: Frontend Result UX**.
+Next roadmap phase: **Phase 11: Optional Persistence**.
 
 Implementation target:
 
-- add retry action after provider failures;
-- add copy actions for generated code example and full analysis;
-- preserve the last successful result when a later request fails;
-- improve timeout/error messages in the UI.
+- decide whether analysis history has enough product value for this project;
+- if yes, add a minimal persistence module and schema;
+- keep persistence/history as the final planned feature phase.
 
 Persistence/history remains intentionally delayed until the final phase.

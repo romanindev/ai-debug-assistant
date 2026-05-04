@@ -125,9 +125,12 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Debug contract types are shared through `@ai-debug-assistant/contracts`.
 - API validation/provider errors are rendered as user-facing messages.
 - The input form warns users to review logs for secrets before submitting.
+- Failed debug requests can be retried.
+- The last successful result stays visible when a later request fails.
+- Generated analysis and code examples can be copied.
+- Timeout and provider errors are mapped to clearer user-facing messages.
 
 ## Next Web Steps
 
 - Add request cancellation or disabled state refinement for repeated submits.
 - Add UI tests once the flow stabilizes.
-- Add copy actions for generated analysis and code examples.
