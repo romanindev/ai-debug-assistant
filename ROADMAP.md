@@ -425,15 +425,14 @@ Acceptance criteria:
 
 ## Phase 11: Optional Persistence
 
-Status: next and final planned feature phase.
+Status: next.
 
-Goal: add storage only when there is a real product reason.
+Goal: add optional storage for analysis history without making the base debug flow depend on a database.
 
 Potential use cases:
 
 - analysis history;
 - saved analyses;
-- user feedback;
 - prompt/version comparison;
 - usage tracking.
 
@@ -443,17 +442,56 @@ Possible stack:
 - Prisma or another migration-aware ORM;
 - separate persistence module in API.
 
+Config:
+
+```bash
+PERSIST_ANALYSES=true
+DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
+```
+
+Initial behavior:
+
+- when `PERSIST_ANALYSES` is not enabled, the current analyze flow stays stateless;
+- when `PERSIST_ANALYSES=true`, successful analyses are persisted;
+- before auth exists, persistence is system-level/local history only;
+- after auth is added, persistence is scoped to the logged-in user.
+
 Acceptance criteria:
 
-- Persistence has a clear product reason.
+- Persistence is behind `PERSIST_ANALYSES=true`.
 - Database schema is minimal.
 - Existing analyze flow still works without unnecessary coupling.
+- Raw secrets are not persisted beyond the already redacted provider input strategy.
+
+## Phase 12: Authentication And User-Scoped History
+
+Status: planned.
+
+Goal: add user accounts so persisted history belongs to authenticated users.
+
+Scope:
+
+- API registration and login;
+- password hashing;
+- session or token-based authentication;
+- authenticated current-user endpoint;
+- user-owned persisted analyses;
+- web registration and login pages;
+- header links for login/register when logged out;
+- header user/logout controls when logged in.
+
+Acceptance criteria:
+
+- Users can register and log in from the web app.
+- Logged-in users can create and view their own persisted analysis history.
+- Logged-out users can still use the stateless debug flow when persistence/auth does not require an account.
+- Analysis history is not shared across users.
 
 ## Suggested Immediate Next Steps
 
-1. Decide whether analysis history has enough product value for this project.
-2. If persistence is added, keep the database schema minimal.
-3. Keep the existing analyze flow working without unnecessary coupling.
+1. Add `PERSIST_ANALYSES=true` and `DATABASE_URL` config.
+2. Add a minimal persistence module and schema for saved analyses.
+3. Keep auth as the next phase and scope persisted history to users there.
 
 ## Decision Log
 

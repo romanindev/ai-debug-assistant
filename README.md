@@ -102,19 +102,34 @@ Workspace-specific documentation:
 
 Create local environment files from `.env.example`.
 
-API:
+Root `.env`:
+
+Used by `docker-compose.yml`.
+
+```bash
+POSTGRES_USER=app
+POSTGRES_PASSWORD=app
+POSTGRES_DB=ai_debug_assistant
+POSTGRES_PORT=5432
+```
+
+API `apps/api/.env`:
 
 ```bash
 PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AI_PROVIDER=mock
 LOG_ERROR=false
+PERSIST_ANALYSES=false
+DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
 AI_REQUEST_TIMEOUT_MS=15000
 ```
 
-Web:
+Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
+
+Web `apps/web/.env`:
 
 ```bash
 VITE_API_URL=http://localhost:3000

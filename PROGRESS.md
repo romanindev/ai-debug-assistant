@@ -74,8 +74,9 @@ Next roadmap phase: **Phase 11: Optional Persistence**.
 
 Implementation target:
 
-- decide whether analysis history has enough product value for this project;
-- if yes, add a minimal persistence module and schema;
-- keep persistence/history as the final planned feature phase.
+- add optional analysis persistence behind `PERSIST_ANALYSES=true`;
+- persist successful analyses only when persistence is enabled;
+- keep the existing stateless debug flow working when persistence is disabled;
+- add auth as the following roadmap phase so persisted history can become user-scoped.
 
-Persistence/history remains intentionally delayed until the final phase.
+After persistence, the next planned phase is authentication with registration, login, header links, and user-scoped persisted history.

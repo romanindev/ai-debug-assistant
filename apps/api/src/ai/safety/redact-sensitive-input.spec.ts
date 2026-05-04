@@ -9,9 +9,10 @@ describe('redactSensitiveInput', () => {
 
   it('redacts generic token and password assignments', () => {
     const result = redactSensitiveInput(
-      'token: abc123 password="super-secret"',
+      'OPENAI_API_KEY=sk-test-token token: abc123 password="super-secret"',
     );
 
+    expect(result).toContain('OPENAI_API_KEY= [REDACTED_SECRET]');
     expect(result).toContain('token: [REDACTED_SECRET]');
     expect(result).toContain('password= [REDACTED_SECRET]');
   });

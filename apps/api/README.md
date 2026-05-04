@@ -15,6 +15,15 @@ The API validates debugging input, exposes health and debug analysis endpoints, 
 
 ## Environment
 
+Create root `.env` for Docker Compose:
+
+```bash
+POSTGRES_USER=app
+POSTGRES_PASSWORD=app
+POSTGRES_DB=ai_debug_assistant
+POSTGRES_PORT=5432
+```
+
 Create `apps/api/.env`:
 
 ```bash
@@ -22,10 +31,16 @@ PORT=3000
 CORS_ORIGIN=http://localhost:5173
 AI_PROVIDER=mock
 LOG_ERROR=false
+PERSIST_ANALYSES=false
+DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
 AI_REQUEST_TIMEOUT_MS=15000
 ```
+
+`PERSIST_ANALYSES=true` enables optional analysis history persistence. When it is disabled, the debug flow stays stateless and does not require PostgreSQL.
+
+Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
 
 ## Commands
 
@@ -92,6 +107,22 @@ Response:
 }
 ```
 
+### `GET /debug/analyses`
+
+Returns recent persisted analyses when `PERSIST_ANALYSES=true`.
+
+When persistence is disabled, the endpoint returns an empty list.
+
+```json
+[]
+```
+
+### `GET /debug/analyses/:id`
+
+Returns one persisted analysis by id when `PERSIST_ANALYSES=true`.
+
+Returns `404` when the analysis does not exist or persistence is disabled.
+
 ## Structure
 
 ```txt
@@ -112,6 +143,9 @@ src/
       debug-analysis.v1.prompt.ts
     safety/
       redact-sensitive-input.ts
+  analysis-history/
+    analysis-history.module.ts
+    analysis-history.service.ts
   debug/
     debug.module.ts
     debug.controller.ts

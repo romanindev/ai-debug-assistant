@@ -57,6 +57,10 @@ export class AiService {
     }
   }
 
+  getProviderName(): string {
+    return this.provider.name;
+  }
+
   private logAiCall(log: AiCallLog): void {
     this.logger.log(JSON.stringify(log));
   }
