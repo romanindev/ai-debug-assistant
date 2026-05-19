@@ -11,6 +11,7 @@ describe('AuthController', () => {
       | 'register'
       | 'login'
       | 'getCurrentUser'
+      | 'getCurrentUserFromCookieHeader'
       | 'getCookieName'
       | 'getCookieMaxAgeMs'
       | 'isCookieSecure'
@@ -26,6 +27,7 @@ describe('AuthController', () => {
       register: jest.fn(),
       login: jest.fn(),
       getCurrentUser: jest.fn(),
+      getCurrentUserFromCookieHeader: jest.fn(),
       getCookieName: jest.fn().mockReturnValue('ai_debug_session'),
       getCookieMaxAgeMs: jest.fn().mockReturnValue(604800000),
       isCookieSecure: jest.fn().mockReturnValue(false),
@@ -83,7 +85,7 @@ describe('AuthController', () => {
       email: 'dev@example.com',
       createdAt: '2026-05-19T10:00:00.000Z',
     };
-    authService.getCurrentUser.mockResolvedValue(user);
+    authService.getCurrentUserFromCookieHeader.mockResolvedValue(user);
     const request = {
       headers: {
         cookie: 'other=value; ai_debug_session=signed-token',
@@ -91,6 +93,8 @@ describe('AuthController', () => {
     } as Request;
 
     await expect(controller.me(request)).resolves.toEqual({ user });
-    expect(authService.getCurrentUser).toHaveBeenCalledWith('signed-token');
+    expect(authService.getCurrentUserFromCookieHeader).toHaveBeenCalledWith(
+      'other=value; ai_debug_session=signed-token',
+    );
   });
 });

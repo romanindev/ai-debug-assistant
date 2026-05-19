@@ -128,6 +128,14 @@ export class AuthService implements OnModuleDestroy {
     return user ? toPublicUser(user) : null;
   }
 
+  getCurrentUserFromCookieHeader(
+    cookieHeader: string | undefined,
+  ): Promise<PublicUser | null> {
+    return this.getCurrentUser(
+      getCookieValue(cookieHeader, this.getCookieName()),
+    );
+  }
+
   getCookieName(): string {
     return (
       this.configService.get<string>('auth.cookieName') ?? 'ai_debug_session'
@@ -312,6 +320,21 @@ function toPublicUser(user: UserRow): PublicUser {
     email: user.email,
     createdAt: user.created_at.toISOString(),
   };
+}
+
+function getCookieValue(
+  cookieHeader: string | undefined,
+  cookieName: string,
+): string | undefined {
+  if (!cookieHeader) {
+    return undefined;
+  }
+
+  return cookieHeader
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(`${cookieName}=`))
+    ?.slice(cookieName.length + 1);
 }
 
 function isAuthTokenPayload(payload: unknown): payload is AuthTokenPayload {

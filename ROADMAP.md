@@ -470,6 +470,7 @@ Status: next.
 Progress:
 
 - API auth config and register/login/me/logout endpoints are in progress.
+- API persisted analyses are scoped to the authenticated user in progress.
 
 Goal: add user accounts so persisted history belongs to authenticated users.
 
@@ -496,10 +497,10 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Finish and verify API auth foundation.
-2. Scope persisted analyses to the authenticated user.
-3. Add web register/login pages and header auth controls.
-4. Add web auth state handling and authenticated API requests.
+1. Finish API auth and user-scoped history verification.
+2. Add web register/login pages and header auth controls.
+3. Add web auth state handling and authenticated API requests.
+4. Connect web history to authenticated persisted analyses.
 5. Run manual smoke checks for logged-out and logged-in flows.
 
 ## Decision Log

@@ -114,9 +114,9 @@ Response:
 
 ### `GET /debug/analyses`
 
-Returns recent persisted analyses when `PERSIST_ANALYSES=true`.
+Returns recent persisted analyses for the authenticated user when `PERSIST_ANALYSES=true`.
 
-When persistence is disabled, the endpoint returns an empty list.
+When persistence is disabled or the request is logged out, the endpoint returns an empty list.
 
 ```json
 []
@@ -124,9 +124,9 @@ When persistence is disabled, the endpoint returns an empty list.
 
 ### `GET /debug/analyses/:id`
 
-Returns one persisted analysis by id when `PERSIST_ANALYSES=true`.
+Returns one persisted analysis by id for the authenticated user when `PERSIST_ANALYSES=true`.
 
-Returns `404` when the analysis does not exist or persistence is disabled.
+Returns `404` when the analysis does not exist, belongs to another user, the request is logged out, or persistence is disabled.
 
 ### `POST /auth/register`
 

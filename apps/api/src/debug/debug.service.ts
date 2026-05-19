@@ -17,10 +17,11 @@ export class DebugService {
     private readonly analysisHistoryService: AnalysisHistoryService,
   ) {}
 
-  async analyze(dto: AnalyzeDebugDto): Promise<DebugAnalysis> {
+  async analyze(dto: AnalyzeDebugDto, userId?: string): Promise<DebugAnalysis> {
     const analysis = await this.aiService.analyzeDebug(dto);
 
     await this.analysisHistoryService.save({
+      userId,
       context: dto.context,
       errorText: redactSensitiveInput(dto.errorText),
       provider: this.aiService.getProviderName(),
@@ -31,12 +32,15 @@ export class DebugService {
     return analysis;
   }
 
-  listAnalyses(): Promise<PersistedDebugAnalysis[]> {
-    return this.analysisHistoryService.listRecent();
+  listAnalyses(userId?: string): Promise<PersistedDebugAnalysis[]> {
+    return this.analysisHistoryService.listRecent(userId);
   }
 
-  async getAnalysis(id: string): Promise<PersistedDebugAnalysis> {
-    const analysis = await this.analysisHistoryService.findById(id);
+  async getAnalysis(
+    id: string,
+    userId?: string,
+  ): Promise<PersistedDebugAnalysis> {
+    const analysis = await this.analysisHistoryService.findById(id, userId);
 
     if (!analysis) {
       throw new NotFoundException('Analysis was not found.');

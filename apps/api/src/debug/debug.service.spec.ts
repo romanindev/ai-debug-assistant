@@ -50,6 +50,7 @@ describe('DebugService', () => {
       await expect(service.analyze(request)).resolves.toBe(analysis);
       expect(aiService.analyzeDebug).toHaveBeenCalledWith(request);
       expect(analysisHistoryService.save).toHaveBeenCalledWith({
+        userId: undefined,
         context: 'typescript',
         errorText: 'TypeError: Cannot read properties of undefined',
         provider: 'mock',
@@ -79,6 +80,29 @@ describe('DebugService', () => {
         'OPENAI_API_KEY= [REDACTED_SECRET] TypeError',
       );
       expect(savedInput.analysis.summary).toBe('Summary');
+    });
+
+    it('passes the authenticated user id when persistence can be scoped', async () => {
+      const analysis: DebugAnalysis = {
+        summary: 'Summary',
+        possibleCause: 'Possible cause',
+        suggestedFix: 'Suggested fix',
+        codeExample: null,
+        checklist: ['Inspect the stack trace.'],
+      };
+      aiService.analyzeDebug.mockResolvedValue(analysis);
+
+      await service.analyze(
+        {
+          context: 'node',
+          errorText: 'TypeError: Cannot read properties of undefined',
+        },
+        'user-id',
+      );
+
+      expect(getSavedAnalysisInput(analysisHistoryService).userId).toBe(
+        'user-id',
+      );
     });
 
     it('saves redacted analysis text after analysis succeeds', async () => {
@@ -115,8 +139,8 @@ describe('DebugService', () => {
 
   describe('listAnalyses', () => {
     it('delegates to analysis history service', async () => {
-      await expect(service.listAnalyses()).resolves.toEqual([]);
-      expect(analysisHistoryService.listRecent).toHaveBeenCalledTimes(1);
+      await expect(service.listAnalyses('user-id')).resolves.toEqual([]);
+      expect(analysisHistoryService.listRecent).toHaveBeenCalledWith('user-id');
     });
   });
 
@@ -139,11 +163,12 @@ describe('DebugService', () => {
       } as const;
       analysisHistoryService.findById.mockResolvedValue(persistedAnalysis);
 
-      await expect(service.getAnalysis(persistedAnalysis.id)).resolves.toBe(
-        persistedAnalysis,
-      );
+      await expect(
+        service.getAnalysis(persistedAnalysis.id, 'user-id'),
+      ).resolves.toBe(persistedAnalysis);
       expect(analysisHistoryService.findById).toHaveBeenCalledWith(
         persistedAnalysis.id,
+        'user-id',
       );
     });
 

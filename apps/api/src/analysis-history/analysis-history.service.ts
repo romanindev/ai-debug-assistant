@@ -14,6 +14,7 @@ import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 
 type SaveAnalysisInput = {
+  userId?: string;
   context: DebugContext;
   errorText: string;
   provider: string;
@@ -23,6 +24,7 @@ type SaveAnalysisInput = {
 
 type PersistedAnalysisRow = {
   id: string;
+  user_id: string | null;
   created_at: Date;
   context: DebugContext;
   error_text: string;
@@ -56,6 +58,7 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
     await this.getPool().query(`
       CREATE TABLE IF NOT EXISTS debug_analyses (
         id uuid PRIMARY KEY,
+        user_id uuid,
         created_at timestamptz NOT NULL DEFAULT now(),
         context text NOT NULL,
         error_text text NOT NULL,
@@ -63,6 +66,14 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
         prompt_version text NOT NULL,
         analysis jsonb NOT NULL
       )
+    `);
+    await this.getPool().query(`
+      ALTER TABLE debug_analyses
+      ADD COLUMN IF NOT EXISTS user_id uuid
+    `);
+    await this.getPool().query(`
+      CREATE INDEX IF NOT EXISTS debug_analyses_user_id_created_at_idx
+      ON debug_analyses (user_id, created_at DESC)
     `);
   }
 
@@ -75,21 +86,27 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
+    if (!input.userId) {
+      return;
+    }
+
     try {
       await this.getPool().query(
         `
           INSERT INTO debug_analyses (
             id,
+            user_id,
             context,
             error_text,
             provider,
             prompt_version,
             analysis
           )
-          VALUES ($1, $2, $3, $4, $5, $6::jsonb)
+          VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)
         `,
         [
           randomUUID(),
+          input.userId,
           input.context,
           input.errorText,
           input.provider,
@@ -106,8 +123,11 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async listRecent(limit = 20): Promise<PersistedDebugAnalysis[]> {
-    if (!this.enabled) {
+  async listRecent(
+    userId: string | undefined,
+    limit = 20,
+  ): Promise<PersistedDebugAnalysis[]> {
+    if (!this.enabled || !userId) {
       return [];
     }
 
@@ -123,17 +143,21 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
           prompt_version,
           analysis
         FROM debug_analyses
+        WHERE user_id = $1
         ORDER BY created_at DESC
-        LIMIT $1
+        LIMIT $2
       `,
-      [normalizedLimit],
+      [userId, normalizedLimit],
     );
 
     return result.rows.map(toPersistedDebugAnalysis);
   }
 
-  async findById(id: string): Promise<PersistedDebugAnalysis | null> {
-    if (!this.enabled) {
+  async findById(
+    id: string,
+    userId: string | undefined,
+  ): Promise<PersistedDebugAnalysis | null> {
+    if (!this.enabled || !userId) {
       return null;
     }
 
@@ -148,10 +172,10 @@ export class AnalysisHistoryService implements OnModuleInit, OnModuleDestroy {
           prompt_version,
           analysis
         FROM debug_analyses
-        WHERE id = $1
+        WHERE id = $1 AND user_id = $2
         LIMIT 1
       `,
-      [id],
+      [id, userId],
     );
 
     const row = result.rows[0];

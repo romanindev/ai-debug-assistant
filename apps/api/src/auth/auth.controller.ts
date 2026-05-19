@@ -45,8 +45,8 @@ export class AuthController {
 
   @Get('me')
   async me(@Req() request: Request): Promise<AuthResponse> {
-    const user = await this.authService.getCurrentUser(
-      getCookieValue(request, this.authService.getCookieName()),
+    const user = await this.authService.getCurrentUserFromCookieHeader(
+      request.headers.cookie,
     );
 
     return { user };
@@ -60,21 +60,4 @@ export class AuthController {
       maxAge: this.authService.getCookieMaxAgeMs(),
     });
   }
-}
-
-function getCookieValue(
-  request: Request,
-  cookieName: string,
-): string | undefined {
-  const cookieHeader = request.headers.cookie;
-
-  if (!cookieHeader) {
-    return undefined;
-  }
-
-  return cookieHeader
-    .split(';')
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith(`${cookieName}=`))
-    ?.slice(cookieName.length + 1);
 }
