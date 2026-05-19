@@ -1,10 +1,10 @@
 # Project Progress
 
-Last updated: May 4, 2026
+Last updated: May 19, 2026
 
 ## Current Checkpoint
 
-AI Debug Assistant currently has a working full-stack debug analysis flow.
+AI Debug Assistant currently has a working full-stack debug analysis flow with optional OpenAI analysis, optional PostgreSQL persistence, authentication, and user-scoped analysis history.
 
 The default local mode uses `AI_PROVIDER=mock`, so the app can run without external API keys. The OpenAI provider is implemented behind the same provider interface and has been manually verified with a real `OPENAI_API_KEY`.
 
@@ -38,8 +38,15 @@ The default local mode uses `AI_PROVIDER=mock`, so the app can run without exter
 - frontend retry, copy-result, timeout-message, and last-successful-result UX
 - optional PostgreSQL analysis persistence behind `PERSIST_ANALYSES=true`
 - persisted analysis list/detail endpoints
+- API authentication with register, login, logout, and current-user endpoints
+- password hashing for stored credentials
+- JWT session stored in an httpOnly cookie
+- user-scoped persisted analysis history
+- web login and registration pages
+- web header auth controls
+- authenticated web history list with saved analysis reopen
 - root and workspace README files
-- roadmap phases 1-11 completed
+- roadmap phases 1-12 completed
 
 ## Verification
 
@@ -67,19 +74,22 @@ Manual OpenAI verification has been completed with:
 - AI observability logs should include metadata only: provider, prompt version, duration, status, and error category.
 - Provider errors should expose safe public messages while preserving raw provider failures only as internal causes.
 - Persistence is optional and controlled by `PERSIST_ANALYSES=true`.
-- Persisted analysis history is currently system-level/local history; Phase 12 should make it user-scoped.
+- Persisted analysis history is scoped by authenticated API user when auth cookie is present.
+- Logged-out debug analysis remains stateless and does not write persisted history.
+- Phase 12 is complete for the planned learning scope.
+- Auth is suitable for the project learning milestone, but not production-hardened.
 - `packages/contracts` intentionally builds both ESM and CJS output:
   - ESM for Vite/web;
   - CJS for Jest/API compatibility.
 
-## Next Phase
+## Roadmap Status
 
-Next roadmap phase: **Phase 12: Authentication And User-Scoped History**.
+The planned roadmap is complete through **Phase 12: Authentication And User-Scoped History**.
 
-Implementation target:
+Potential future work, if the project continues:
 
-- add registration and login on the API;
-- add secure password hashing;
-- use authenticated requests to scope persisted analysis history to the current user;
-- add web registration/login pages and header auth links;
-- keep logged-out users able to run the stateless debug flow.
+- add UI/component tests for the web app;
+- introduce migration tooling instead of lazy schema creation;
+- add rate limiting and stronger auth/session hardening;
+- improve deployment configuration;
+- expand history management features such as delete or search.

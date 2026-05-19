@@ -36,12 +36,14 @@ The current flow:
 4. Web app sends the request to the API.
 5. API validates the request.
 6. API returns a structured debug analysis.
-7. UI displays:
+7. If the user is logged in and persistence is enabled, the analysis is saved to user-scoped history.
+8. UI displays:
    - summary
    - possible cause
    - suggested fix
    - code example
    - checklist
+9. Logged-in users can reopen previous analyses from history.
 
 ## Current Status
 
@@ -54,6 +56,9 @@ The current flow:
 - Common secrets are redacted before external AI provider calls.
 - Lightweight AI call observability is implemented.
 - Optional PostgreSQL analysis persistence is available through `PERSIST_ANALYSES=true`.
+- Authentication is implemented with API endpoints and web login/register pages.
+- Persisted analysis history is scoped to the authenticated user.
+- Web history is connected to authenticated persisted analyses.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
 - Web supports retry, copy actions, clearer errors, and preserving the last successful result.
@@ -65,8 +70,7 @@ This repository is not intended to be production-ready.
 
 Known limitations:
 
-- no authentication;
-- no user-scoped history yet;
+- authentication is not production-hardened yet;
 - no rate limiting;
 - no deployment configuration;
 - only basic sensitive-data redaction;
@@ -124,12 +128,17 @@ AI_PROVIDER=mock
 LOG_ERROR=false
 PERSIST_ANALYSES=false
 DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
+AUTH_JWT_SECRET=change-me
+AUTH_COOKIE_NAME=ai_debug_session
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_MAX_AGE_MS=604800000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
-AI_REQUEST_TIMEOUT_MS=15000
+AI_REQUEST_TIMEOUT_MS=60000
 ```
 
 Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
+Auth endpoints require both `DATABASE_URL` and `AUTH_JWT_SECRET`.
 
 Web `apps/web/.env`:
 
@@ -183,6 +192,15 @@ Main endpoint:
 POST /debug/analyze
 ```
 
+Auth endpoints:
+
+```txt
+POST /auth/register
+POST /auth/login
+POST /auth/logout
+GET /auth/me
+```
+
 Request:
 
 ```json
@@ -211,8 +229,12 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Add authentication with registration and login.
-2. Scope persisted analysis history to authenticated users.
+The planned roadmap is complete through Phase 12:
+
+1. Authentication with registration and login.
+2. User-scoped persisted analysis history.
+
+Future work would be a new hardening/backlog phase rather than part of the original roadmap.
 
 ## License
 

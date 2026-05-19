@@ -1,13 +1,20 @@
 import { useMemo, useState } from 'react';
 import type { ComponentProps } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
+import type { PublicUser } from '../auth/types';
 import { useHealthQuery } from '../health/useHealthQuery';
+import {
+  analysesQueryKey,
+  useAnalysesQuery,
+} from './hooks/useAnalysesQuery';
 import { useAnalyzeDebugMutation } from './hooks/useAnalyzeDebugMutation';
 import {
   DEBUG_CONTEXTS,
   type AnalyzeDebugRequest,
   type DebugAnalysis,
   type DebugContext,
+  type PersistedDebugAnalysis,
 } from './types';
 
 const contextLabels: Record<DebugContext, string> = {
@@ -28,7 +35,21 @@ type LastSuccessfulAnalysis = {
 
 type FormSubmitHandler = NonNullable<ComponentProps<'form'>['onSubmit']>;
 
-export function DebugAssistantPage() {
+type DebugAssistantPageProps = {
+  currentUser: PublicUser | null;
+  isAuthLoading: boolean;
+  isLoggingOut: boolean;
+  onLogout: () => void;
+  onNavigate: (path: string) => void;
+};
+
+export function DebugAssistantPage({
+  currentUser,
+  isAuthLoading,
+  isLoggingOut,
+  onLogout,
+  onNavigate,
+}: DebugAssistantPageProps) {
   const [errorText, setErrorText] = useState(exampleError);
   const [context, setContext] = useState<DebugContext>('react');
   const [lastRequest, setLastRequest] = useState<AnalyzeDebugRequest | null>(
@@ -38,8 +59,10 @@ export function DebugAssistantPage() {
     useState<LastSuccessfulAnalysis | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
+  const queryClient = useQueryClient();
   const healthQuery = useHealthQuery();
   const analyzeMutation = useAnalyzeDebugMutation();
+  const analysesQuery = useAnalysesQuery(Boolean(currentUser));
 
   const trimmedErrorText = errorText.trim();
   const canSubmit = trimmedErrorText.length >= 10 && !analyzeMutation.isPending;
@@ -80,6 +103,9 @@ export function DebugAssistantPage() {
     analyzeMutation.mutate(request, {
       onSuccess: (result) => {
         setLastSuccessfulAnalysis({ request, result });
+        if (currentUser) {
+          void queryClient.invalidateQueries({ queryKey: analysesQueryKey });
+        }
       },
     });
   };
@@ -93,6 +119,9 @@ export function DebugAssistantPage() {
     analyzeMutation.mutate(lastRequest, {
       onSuccess: (result) => {
         setLastSuccessfulAnalysis({ request: lastRequest, result });
+        if (currentUser) {
+          void queryClient.invalidateQueries({ queryKey: analysesQueryKey });
+        }
       },
     });
   }
@@ -114,6 +143,19 @@ export function DebugAssistantPage() {
     void handleCopy(formatAnalysisForCopy(displayedAnalysis), 'Analysis');
   }
 
+  function handleSelectHistoryItem(item: PersistedDebugAnalysis) {
+    const request = {
+      context: item.context,
+      errorText: item.errorText,
+    };
+
+    setContext(item.context);
+    setErrorText(item.errorText);
+    setLastRequest(request);
+    setLastSuccessfulAnalysis({ request, result: item.analysis });
+    setCopyStatus(null);
+  }
+
   return (
     <main className="mx-auto min-h-screen w-[min(1180px,calc(100vw-32px))] py-8 text-slate-800 max-[860px]:w-[min(calc(100%_-_20px),720px)] max-[860px]:py-5">
       <header className="mb-6 flex items-start justify-between gap-6 max-[860px]:grid">
@@ -126,28 +168,38 @@ export function DebugAssistantPage() {
           </p>
         </div>
 
-        <div
-          className={`inline-flex min-h-[34px] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold whitespace-nowrap ${
-            healthQuery.isError
-              ? 'border-red-200 bg-red-50 text-red-800'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-800'
-          }`}
-        >
-          <span
-            className={`h-2 w-2 rounded-full ${
-              healthQuery.isError ? 'bg-red-500' : 'bg-emerald-500'
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <div
+            className={`inline-flex min-h-[34px] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold whitespace-nowrap ${
+              healthQuery.isError
+                ? 'border-red-200 bg-red-50 text-red-800'
+                : 'border-emerald-200 bg-emerald-50 text-emerald-800'
             }`}
-            aria-hidden="true"
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                healthQuery.isError ? 'bg-red-500' : 'bg-emerald-500'
+              }`}
+              aria-hidden="true"
+            />
+            {apiStatusLabel}
+          </div>
+          <AuthControls
+            currentUser={currentUser}
+            isAuthLoading={isAuthLoading}
+            isLoggingOut={isLoggingOut}
+            onLogout={onLogout}
+            onNavigate={onNavigate}
           />
-          {apiStatusLabel}
         </div>
       </header>
 
       <section className="grid grid-cols-[minmax(340px,0.9fr)_minmax(420px,1.1fr)] items-start gap-5 max-[860px]:grid-cols-1">
-        <form
-          className="min-h-[620px] rounded-lg border border-slate-300 bg-white p-5 shadow-[0_16px_38px_rgb(15_23_42/0.07)] max-[860px]:min-h-0"
-          onSubmit={handleSubmit}
-        >
+        <div className="grid gap-5">
+          <form
+            className="min-h-[620px] rounded-lg border border-slate-300 bg-white p-5 shadow-[0_16px_38px_rgb(15_23_42/0.07)] max-[860px]:min-h-0"
+            onSubmit={handleSubmit}
+          >
           <div className="mb-4 flex items-center justify-between gap-4">
             <h2 className="m-0 text-lg font-bold text-slate-950">Debug Input</h2>
             <span className="text-[13px] text-slate-500">
@@ -199,7 +251,17 @@ export function DebugAssistantPage() {
               Enter at least 10 characters.
             </p>
           )}
-        </form>
+          </form>
+
+          <HistoryPanel
+            currentUser={currentUser}
+            isLoading={analysesQuery.isLoading}
+            isError={analysesQuery.isError}
+            analyses={analysesQuery.data ?? []}
+            onSelect={handleSelectHistoryItem}
+            onNavigate={onNavigate}
+          />
+        </div>
 
         <section
           className="min-h-[620px] rounded-lg border border-slate-300 bg-white p-5 shadow-[0_16px_38px_rgb(15_23_42/0.07)] max-[860px]:min-h-0"
@@ -329,6 +391,145 @@ export function DebugAssistantPage() {
         </section>
       </section>
     </main>
+  );
+}
+
+type AuthControlsProps = {
+  currentUser: PublicUser | null;
+  isAuthLoading: boolean;
+  isLoggingOut: boolean;
+  onLogout: () => void;
+  onNavigate: (path: string) => void;
+};
+
+function AuthControls({
+  currentUser,
+  isAuthLoading,
+  isLoggingOut,
+  onLogout,
+  onNavigate,
+}: AuthControlsProps) {
+  if (isAuthLoading) {
+    return (
+      <span className="min-h-[34px] rounded-lg border border-slate-200 px-2.5 py-1.5 text-[13px] font-semibold text-slate-500">
+        Checking session
+      </span>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          className="min-h-[34px] rounded-lg border border-slate-300 px-3 text-[13px] font-bold text-slate-700"
+          type="button"
+          onClick={() => onNavigate('/login')}
+        >
+          Login
+        </button>
+        <button
+          className="min-h-[34px] rounded-lg bg-blue-700 px-3 text-[13px] font-bold text-white"
+          type="button"
+          onClick={() => onNavigate('/register')}
+        >
+          Register
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <span className="max-w-[240px] truncate text-[13px] font-semibold text-slate-600">
+        {currentUser.email}
+      </span>
+      <button
+        className="min-h-[34px] rounded-lg border border-slate-300 px-3 text-[13px] font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+        type="button"
+        disabled={isLoggingOut}
+        onClick={onLogout}
+      >
+        {isLoggingOut ? 'Logging out...' : 'Logout'}
+      </button>
+    </div>
+  );
+}
+
+type HistoryPanelProps = {
+  currentUser: PublicUser | null;
+  isLoading: boolean;
+  isError: boolean;
+  analyses: PersistedDebugAnalysis[];
+  onSelect: (analysis: PersistedDebugAnalysis) => void;
+  onNavigate: (path: string) => void;
+};
+
+function HistoryPanel({
+  currentUser,
+  isLoading,
+  isError,
+  analyses,
+  onSelect,
+  onNavigate,
+}: HistoryPanelProps) {
+  return (
+    <section className="rounded-lg border border-slate-300 bg-white p-5 shadow-[0_16px_38px_rgb(15_23_42/0.07)]">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="m-0 text-lg font-bold text-slate-950">History</h2>
+        {!currentUser && (
+          <button
+            className="min-h-8 rounded-lg border border-slate-300 px-2.5 text-[13px] font-bold text-slate-700"
+            type="button"
+            onClick={() => onNavigate('/login')}
+          >
+            Login
+          </button>
+        )}
+      </div>
+
+      {!currentUser && (
+        <p className="m-0 text-sm leading-6 text-slate-500">
+          Log in to save and view analysis history.
+        </p>
+      )}
+
+      {currentUser && isLoading && (
+        <p className="m-0 text-sm leading-6 text-slate-500">Loading history.</p>
+      )}
+
+      {currentUser && isError && (
+        <p className="m-0 text-sm leading-6 text-red-800">
+          History could not be loaded.
+        </p>
+      )}
+
+      {currentUser && !isLoading && !isError && analyses.length === 0 && (
+        <p className="m-0 text-sm leading-6 text-slate-500">
+          No saved analyses yet.
+        </p>
+      )}
+
+      {currentUser && analyses.length > 0 && (
+        <ul className="m-0 grid list-none gap-2 p-0">
+          {analyses.map((item) => (
+            <li key={item.id}>
+              <button
+                className="grid w-full cursor-pointer gap-1 rounded-lg border border-slate-200 bg-slate-50 p-3 text-left hover:border-blue-300 hover:bg-blue-50"
+                type="button"
+                onClick={() => onSelect(item)}
+              >
+                <span className="text-[13px] font-bold text-slate-950">
+                  {contextLabels[item.context]}
+                </span>
+                <span className="line-clamp-2 text-[13px] leading-5 text-slate-600">
+                  {item.errorText}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
