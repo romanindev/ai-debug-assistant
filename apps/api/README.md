@@ -214,9 +214,11 @@ packages/contracts
 - OpenAI integration uses the Responses API with structured output validation.
 - API errors use a consistent `{ error: { code, message, details? } }` shape.
 - OpenAI provider input is redacted for common secrets before external calls.
-- Auth API foundation exposes register, login, logout, and current-user endpoints.
+- Auth API exposes register, login, logout, and current-user endpoints.
+- Persisted analyses are scoped to the authenticated user.
 - Unit and e2e tests cover the current API flow.
 
-## Next API Steps
+## Future API Backlog
 
-- Scope persisted analyses to authenticated users.
+- Add migration tooling instead of lazy schema creation.
+- Add rate limiting and stronger session hardening.

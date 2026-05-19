@@ -85,13 +85,17 @@ src/
     auth/
       AuthPage.tsx
       api/
+        authApi.ts
       hooks/
+        useAuthQueries.ts
     debug/
       DebugAssistantPage.tsx
       types.ts
       api/
         analyzeDebug.ts
+        listAnalyses.ts
       hooks/
+        useAnalysesQuery.ts
         useAnalyzeDebugMutation.ts
 ```
 
@@ -115,10 +119,22 @@ Server-state is handled through React Query:
 src/api/queryClient.ts
 ```
 
+Auth state is loaded from `GET /auth/me`, and login/register/logout actions use mutations:
+
+```txt
+src/features/auth/hooks/useAuthQueries.ts
+```
+
 The debug analysis action uses a mutation:
 
 ```txt
 src/features/debug/hooks/useAnalyzeDebugMutation.ts
+```
+
+The persisted history list uses a query:
+
+```txt
+src/features/debug/hooks/useAnalysesQuery.ts
 ```
 
 ## Current Status
@@ -139,7 +155,7 @@ src/features/debug/hooks/useAnalyzeDebugMutation.ts
 - Header controls show login/register links when logged out and user/logout controls when logged in.
 - Logged-in users can view and reopen their persisted analysis history.
 
-## Next Web Steps
+## Future Web Backlog
 
-- Smoke test the full auth flow in the browser before closing Phase 12.
 - Add UI tests once the flow stabilizes.
+- Add richer history management such as delete or search.

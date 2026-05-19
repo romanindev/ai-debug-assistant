@@ -26,11 +26,17 @@ Implemented:
 - stable API error response shape for validation/provider failures
 - basic input redaction before external AI provider calls
 - UI warning about secrets in pasted logs
+- optional PostgreSQL analysis persistence
+- authentication with register/login/logout/current-user endpoints
+- user-scoped persisted analysis history
+- web login and registration pages
+- web header auth controls
+- authenticated web history list
 
 Current important limitation:
 
-- Provider error categories are still coarse.
-- Persistence/history is intentionally delayed until the final phase.
+- Authentication is implemented for the learning milestone, but it is not production-hardened.
+- Database schema management is intentionally lightweight and does not use a migration tool yet.
 
 ## Guiding Principles
 
@@ -465,13 +471,16 @@ Acceptance criteria:
 
 ## Phase 12: Authentication And User-Scoped History
 
-Status: next.
+Status: completed.
 
 Progress:
 
-- API auth config and register/login/me/logout endpoints are in progress.
-- API persisted analyses are scoped to the authenticated user in progress.
-- Web login/register pages, header auth controls, and authenticated history are in progress.
+- API auth config and register/login/me/logout endpoints are implemented.
+- Passwords are hashed before storage.
+- JWT sessions are stored in an httpOnly cookie.
+- Persisted analyses are scoped to the authenticated user.
+- Logged-out users can still use the stateless debug flow.
+- Web login/register pages, header auth controls, and authenticated history are implemented.
 
 Goal: add user accounts so persisted history belongs to authenticated users.
 
@@ -496,11 +505,11 @@ Acceptance criteria:
 - Auth secrets are configured through environment variables and are not committed.
 - Password hashes are stored, never plaintext passwords.
 
-## Suggested Immediate Next Steps
+## Roadmap Completion Notes
 
-1. Finish verification for logged-out and logged-in web flows.
-2. Review whether auth/history UX needs small polish before closing Phase 12.
-3. Update Phase 12 status after final smoke checks.
+- The planned learning roadmap is complete through Phase 12.
+- The project can pause here as a functional full-stack learning project.
+- Further work should be treated as a new roadmap or hardening backlog.
 
 ## Decision Log
 

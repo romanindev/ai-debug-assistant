@@ -36,12 +36,14 @@ The current flow:
 4. Web app sends the request to the API.
 5. API validates the request.
 6. API returns a structured debug analysis.
-7. UI displays:
+7. If the user is logged in and persistence is enabled, the analysis is saved to user-scoped history.
+8. UI displays:
    - summary
    - possible cause
    - suggested fix
    - code example
    - checklist
+9. Logged-in users can reopen previous analyses from history.
 
 ## Current Status
 
@@ -54,8 +56,8 @@ The current flow:
 - Common secrets are redacted before external AI provider calls.
 - Lightweight AI call observability is implemented.
 - Optional PostgreSQL analysis persistence is available through `PERSIST_ANALYSES=true`.
-- Authentication is in progress with API endpoints and web login/register pages.
-- API persisted analysis history is scoped to the authenticated user.
+- Authentication is implemented with API endpoints and web login/register pages.
+- Persisted analysis history is scoped to the authenticated user.
 - Web history is connected to authenticated persisted analyses.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
@@ -227,8 +229,12 @@ Response:
 
 ## Planned Learning Milestones
 
-1. Add authentication with registration and login.
-2. Scope persisted analysis history to authenticated users.
+The planned roadmap is complete through Phase 12:
+
+1. Authentication with registration and login.
+2. User-scoped persisted analysis history.
+
+Future work would be a new hardening/backlog phase rather than part of the original roadmap.
 
 ## License
 
