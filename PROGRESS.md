@@ -69,7 +69,7 @@ Manual OpenAI verification has been completed with:
 - Persistence is optional and controlled by `PERSIST_ANALYSES=true`.
 - Persisted analysis history is scoped by authenticated API user when auth cookie is present.
 - Logged-out debug analysis remains stateless and does not write persisted history.
-- Phase 12 API auth foundation is in progress: register, login, logout, current-user endpoints, and user-scoped history are being added.
+- Phase 12 auth is in progress: API auth, user-scoped history, web login/register, header auth controls, and authenticated web history are wired.
 - `packages/contracts` intentionally builds both ESM and CJS output:
   - ESM for Vite/web;
   - CJS for Jest/API compatibility.
@@ -82,6 +82,5 @@ Implementation target:
 
 - add registration and login on the API;
 - add secure password hashing;
-- add web registration/login pages and header auth links;
-- connect web history to authenticated persisted analyses;
 - keep logged-out users able to run the stateless debug flow.
+- finish verification and decide whether Phase 12 needs additional hardening before marking complete.
