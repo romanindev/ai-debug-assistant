@@ -33,12 +33,17 @@ AI_PROVIDER=mock
 LOG_ERROR=false
 PERSIST_ANALYSES=false
 DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
+AUTH_JWT_SECRET=change-me
+AUTH_COOKIE_NAME=ai_debug_session
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_MAX_AGE_MS=604800000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
-AI_REQUEST_TIMEOUT_MS=15000
+AI_REQUEST_TIMEOUT_MS=60000
 ```
 
 `PERSIST_ANALYSES=true` enables optional analysis history persistence. When it is disabled, the debug flow stays stateless and does not require PostgreSQL.
+Auth endpoints require both `DATABASE_URL` and `AUTH_JWT_SECRET`.
 
 Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
 
@@ -123,6 +128,38 @@ Returns one persisted analysis by id when `PERSIST_ANALYSES=true`.
 
 Returns `404` when the analysis does not exist or persistence is disabled.
 
+### `POST /auth/register`
+
+Creates a user, sets an httpOnly auth cookie, and returns the public user.
+
+```json
+{
+  "user": {
+    "id": "user-id",
+    "email": "dev@example.com",
+    "createdAt": "2026-05-19T10:00:00.000Z"
+  }
+}
+```
+
+### `POST /auth/login`
+
+Logs in an existing user, sets an httpOnly auth cookie, and returns the public user.
+
+### `GET /auth/me`
+
+Returns the current user from the auth cookie, or `null` when the request is logged out.
+
+```json
+{
+  "user": null
+}
+```
+
+### `POST /auth/logout`
+
+Clears the auth cookie.
+
 ## Structure
 
 ```txt
@@ -146,6 +183,11 @@ src/
   analysis-history/
     analysis-history.module.ts
     analysis-history.service.ts
+  auth/
+    auth.module.ts
+    auth.controller.ts
+    auth.service.ts
+    dto/
   debug/
     debug.module.ts
     debug.controller.ts
@@ -172,8 +214,9 @@ packages/contracts
 - OpenAI integration uses the Responses API with structured output validation.
 - API errors use a consistent `{ error: { code, message, details? } }` shape.
 - OpenAI provider input is redacted for common secrets before external calls.
+- Auth API foundation exposes register, login, logout, and current-user endpoints.
 - Unit and e2e tests cover the current API flow.
 
 ## Next API Steps
 
-- Add lightweight observability for AI calls.
+- Scope persisted analyses to authenticated users.

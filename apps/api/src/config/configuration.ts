@@ -9,6 +9,15 @@ export default () => ({
   database: {
     url: process.env.DATABASE_URL,
   },
+  auth: {
+    jwtSecret: process.env.AUTH_JWT_SECRET,
+    cookieName: process.env.AUTH_COOKIE_NAME ?? 'ai_debug_session',
+    cookieSecure: parseBooleanFlag(process.env.AUTH_COOKIE_SECURE),
+    cookieMaxAgeMs: parseInt(
+      process.env.AUTH_COOKIE_MAX_AGE_MS ?? '604800000',
+      10,
+    ),
+  },
   cors: {
     origin: process.env.CORS_ORIGIN,
   },

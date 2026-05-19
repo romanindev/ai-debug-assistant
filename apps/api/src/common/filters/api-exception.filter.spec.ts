@@ -1,4 +1,8 @@
-import { ArgumentsHost, HttpException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  ConflictException,
+  HttpException,
+} from '@nestjs/common';
 
 import { ApiExceptionFilter } from './api-exception.filter';
 
@@ -21,6 +25,22 @@ describe('ApiExceptionFilter', () => {
 
     expect(logger.error).toHaveBeenCalledWith(exception, undefined);
   });
+
+  it('maps conflict errors to a stable code and public message', () => {
+    const filter = new ApiExceptionFilter();
+    const host = createHost();
+
+    filter.catch(new ConflictException('Email is already registered.'), host);
+
+    const response = getResponse(host);
+    expect(response.status).toHaveBeenCalledWith(409);
+    expect(response.json).toHaveBeenCalledWith({
+      error: {
+        code: 'CONFLICT',
+        message: 'Email is already registered.',
+      },
+    });
+  });
 });
 
 function createHost(): ArgumentsHost {
@@ -34,4 +54,11 @@ function createHost(): ArgumentsHost {
       getResponse: () => response,
     }),
   } as unknown as ArgumentsHost;
+}
+
+function getResponse(host: ArgumentsHost): {
+  status: jest.Mock;
+  json: jest.Mock;
+} {
+  return host.switchToHttp().getResponse();
 }

@@ -54,6 +54,7 @@ The current flow:
 - Common secrets are redacted before external AI provider calls.
 - Lightweight AI call observability is implemented.
 - Optional PostgreSQL analysis persistence is available through `PERSIST_ANALYSES=true`.
+- API authentication foundation is in progress with register/login/me/logout endpoints.
 - Web app is connected to the API.
 - Main debug form and result UI are implemented.
 - Web supports retry, copy actions, clearer errors, and preserving the last successful result.
@@ -65,7 +66,7 @@ This repository is not intended to be production-ready.
 
 Known limitations:
 
-- no authentication;
+- web authentication is not implemented yet;
 - no user-scoped history yet;
 - no rate limiting;
 - no deployment configuration;
@@ -124,12 +125,17 @@ AI_PROVIDER=mock
 LOG_ERROR=false
 PERSIST_ANALYSES=false
 DATABASE_URL=postgresql://app:app@localhost:5432/ai_debug_assistant
+AUTH_JWT_SECRET=change-me
+AUTH_COOKIE_NAME=ai_debug_session
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_MAX_AGE_MS=604800000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
-AI_REQUEST_TIMEOUT_MS=15000
+AI_REQUEST_TIMEOUT_MS=60000
 ```
 
 Keep `DATABASE_URL` aligned with the root `.env` database values when changing them.
+Auth endpoints require both `DATABASE_URL` and `AUTH_JWT_SECRET`.
 
 Web `apps/web/.env`:
 
@@ -181,6 +187,15 @@ Main endpoint:
 
 ```txt
 POST /debug/analyze
+```
+
+Auth endpoints:
+
+```txt
+POST /auth/register
+POST /auth/login
+POST /auth/logout
+GET /auth/me
 ```
 
 Request:

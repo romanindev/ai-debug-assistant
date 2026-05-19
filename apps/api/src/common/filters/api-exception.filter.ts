@@ -101,10 +101,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
       body: {
         error: {
           code: this.getHttpErrorCode(status),
-          message:
-            typeof response === 'string'
-              ? response
-              : 'Request could not be completed.',
+          message: getHttpErrorMessage(response, status),
         },
       },
     };
@@ -121,6 +118,10 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     if (status === 403) {
       return 'FORBIDDEN';
+    }
+
+    if (status === 409) {
+      return 'CONFLICT';
     }
 
     return 'HTTP_ERROR';
@@ -144,4 +145,22 @@ function isValidationResponse(
     'message' in response &&
     Array.isArray(response.message)
   );
+}
+
+function getHttpErrorMessage(response: unknown, status: number): string {
+  if (typeof response === 'string') {
+    return response;
+  }
+
+  if (
+    status === 409 &&
+    typeof response === 'object' &&
+    response !== null &&
+    'message' in response &&
+    typeof response.message === 'string'
+  ) {
+    return response.message;
+  }
+
+  return 'Request could not be completed.';
 }

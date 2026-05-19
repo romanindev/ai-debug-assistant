@@ -467,6 +467,10 @@ Acceptance criteria:
 
 Status: next.
 
+Progress:
+
+- API auth config and register/login/me/logout endpoints are in progress.
+
 Goal: add user accounts so persisted history belongs to authenticated users.
 
 Scope:
@@ -492,11 +496,11 @@ Acceptance criteria:
 
 ## Suggested Immediate Next Steps
 
-1. Add auth config such as `AUTH_JWT_SECRET` and cookie settings.
-2. Add users table and auth service/controller.
-3. Add register/login/me/logout endpoints.
-4. Scope persisted analyses to the authenticated user.
-5. Add web register/login pages and header auth controls.
+1. Finish and verify API auth foundation.
+2. Scope persisted analyses to the authenticated user.
+3. Add web register/login pages and header auth controls.
+4. Add web auth state handling and authenticated API requests.
+5. Run manual smoke checks for logged-out and logged-in flows.
 
 ## Decision Log
 
